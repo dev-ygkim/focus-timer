@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="920" viewBox="0 0 1440 920" role="img" aria-labelledby="title desc">
+  <title id="title">Focus Timer 프로필 관리와 즉시 실행 시안</title>
+  <desc id="desc">프로필 목록에서 이름과 집중·휴식·집중 횟수 조합을 확인하고 즉시 실행하거나, 현재 설정을 이름 있는 프로필로 저장하는 macOS 화면 시안입니다.</desc>
+  <defs>
+    <linearGradient id="focus" x1="0" x2="1"><stop stop-color="#58c8b7"/><stop offset="1" stop-color="#7ee0ce"/></linearGradient>
+    <linearGradient id="profile" x1="0" x2="1"><stop stop-color="#5ba1c4"/><stop offset="1" stop-color="#83c7df"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000" flood-opacity=".42"/></filter>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#78d6c5"/></marker>
+    <style>
+      .bg{fill:#131617}.bar{fill:#222728}.card{fill:#262c2e}.subcard{fill:#1d2324}.title{font:700 28px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#f3f7f6}.subtitle{font:15px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#aebbbb}.caption{font:700 14px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#83c7df;letter-spacing:1.3px}.body{font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#e7eeee}.small{font:14px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#aab7b7}.tiny{font:12px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#899798}.number{font:700 18px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#f1f6f5}.button{font:700 15px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#102220}.buttonAlt{font:600 14px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#dbe8e6}.input{font:600 17px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#edf3f2}
+    </style>
+  </defs>
+  <rect class="bg" width="1440" height="920"/>
+  <rect class="bar" x="0" y="0" width="1440" height="52"/>
+  <circle cx="27" cy="26" r="7" fill="#78d6c5"/>
+  <text class="body" x="44" y="32">Focus Timer</text>
+  <rect x="1192" y="8" width="135" height="36" rx="9" fill="#334847"/>
+  <circle cx="1214" cy="26" r="6" fill="#78d6c5"/>
+  <text class="number" x="1229" y="32">집중 50:00</text>
+
+  <text class="title" x="74" y="111">프로필</text>
+  <text class="subtitle" x="74" y="140">반복해서 쓰는 집중 계획에 이름을 붙이고, 한 번에 새 타이머를 시작합니다.</text>
+
+  <text class="caption" x="74" y="194">A · PROFILE LIST</text>
+  <g filter="url(#shadow)"><rect class="card" x="74" y="220" width="560" height="616" rx="24"/></g>
+  <text class="title" x="108" y="276">저장된 프로필</text>
+  <rect x="485" y="245" width="112" height="35" rx="17" fill="#31494c"/>
+  <text class="buttonAlt" x="510" y="268">3 / 10</text>
+  <text class="small" x="108" y="308">프로필 하나를 선택하면 집중 1회차가 즉시 시작됩니다.</text>
+  <rect x="108" y="333" width="491" height="48" rx="12" fill="url(#profile)"/>
+  <text class="button" x="266" y="364">+ 현재 설정을 프로필로 저장</text>
+
+  <rect class="subcard" x="108" y="406" width="491" height="93" rx="14" stroke="#46656d"/>
+  <circle cx="135" cy="436" r="8" fill="#83c7df"/>
+  <text class="body" x="154" y="442">딥 워크</text>
+  <text class="small" x="154" y="470">집중 50분 · 휴식 10분 · 집중 4회</text>
+  <rect x="456" y="426" width="104" height="42" rx="11" fill="url(#focus)"/>
+  <text class="button" x="490" y="453">실행</text>
+  <text class="tiny" x="569" y="489">⌫</text>
+
+  <rect class="subcard" x="108" y="514" width="491" height="93" rx="14" stroke="#3c4849"/>
+  <circle cx="135" cy="544" r="8" fill="#5e8ca1"/>
+  <text class="body" x="154" y="550">글쓰기</text>
+  <text class="small" x="154" y="578">집중 25분 · 휴식 5분 · 집중 4회</text>
+  <rect x="456" y="534" width="104" height="42" rx="11" fill="url(#focus)"/>
+  <text class="button" x="490" y="561">실행</text>
+  <text class="tiny" x="569" y="597">⌫</text>
+
+  <rect class="subcard" x="108" y="622" width="491" height="93" rx="14" stroke="#3c4849"/>
+  <circle cx="135" cy="652" r="8" fill="#5e8ca1"/>
+  <text class="body" x="154" y="658">빠른 작업</text>
+  <text class="small" x="154" y="686">집중 15분 · 휴식 3분 · 집중 2회</text>
+  <rect x="456" y="642" width="104" height="42" rx="11" fill="url(#focus)"/>
+  <text class="button" x="490" y="669">실행</text>
+  <text class="tiny" x="569" y="705">⌫</text>
+  <text class="tiny" x="108" y="781">삭제를 선택하면 이름과 값을 확인하는 대화상자 뒤에 해당 프로필만 제거합니다.</text>
+  <text class="tiny" x="108" y="805">최대 10개에 도달하면 저장 버튼은 비활성화되고 삭제 후 새로 저장할 수 있습니다.</text>
+
+  <text class="caption" x="680" y="194">B · SAVE CURRENT PLAN</text>
+  <g filter="url(#shadow)"><rect class="card" x="680" y="220" width="350" height="454" rx="24"/></g>
+  <text class="title" x="714" y="276">프로필 저장</text>
+  <text class="subtitle" x="714" y="305">현재 타이머 조합을 저장합니다.</text>
+  <line x1="714" y1="329" x2="996" y2="329" stroke="#3c4849"/>
+  <text class="body" x="714" y="369">프로필 이름</text>
+  <rect class="subcard" x="714" y="385" width="282" height="49" rx="10" stroke="#5d7a80"/>
+  <text class="input" x="732" y="417">딥 워크</text>
+  <text class="tiny" x="714" y="459">비어 있지 않고 다른 이름과 중복되지 않아야 합니다.</text>
+  <text class="small" x="714" y="506">집중 50분   ·   휴식 10분   ·   집중 4회</text>
+  <rect x="714" y="550" width="282" height="49" rx="12" fill="url(#profile)"/>
+  <text class="button" x="817" y="581">프로필 저장</text>
+  <text class="tiny" x="714" y="635">프로필에는 알림 토글을 저장하지 않습니다.</text>
+
+  <text class="caption" x="1076" y="194">C · INSTANT RUN</text>
+  <g filter="url(#shadow)"><rect class="card" x="1076" y="220" width="290" height="454" rx="24"/></g>
+  <text class="body" x="1108" y="277">딥 워크 실행</text>
+  <text class="small" x="1108" y="307">실행 버튼 한 번</text>
+  <rect x="1108" y="334" width="226" height="62" rx="13" fill="#233b3d" stroke="#78d6c5"/>
+  <text class="small" x="1132" y="361">프로필 값 적용</text>
+  <text class="body" x="1132" y="384">50분 · 10분 · 4회</text>
+  <path d="M1221 407 V456" fill="none" stroke="#78d6c5" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="1108" y="473" width="226" height="82" rx="41" fill="#203638" stroke="#78d6c5" stroke-width="2"/>
+  <text x="1154" y="511" style="font:300 34px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#f4f7f7">50:00</text>
+  <text class="small" x="1145" y="536">집중 1 / 4 시작</text>
+  <text class="tiny" x="1108" y="602">기존 세션은 새 타이머로 교체</text>
+  <text class="tiny" x="1108" y="624">전환 자체에는 종료 알림 없음</text>
+
+  <rect x="680" y="714" width="686" height="122" rx="18" fill="#202728" stroke="#3c4849"/>
+  <text class="body" x="714" y="754">프로필과 전역 설정의 범위</text>
+  <text class="small" x="714" y="784">프로필: 이름 · 집중 시간 · 휴식 시간 · 집중 횟수</text>
+  <text class="small" x="714" y="812">전역 설정: 소리 알림 · macOS 알림 — 프로필 실행 뒤에도 그대로 유지</text>
+
+  <text class="small" x="74" y="884">시안 원칙: 프로필 수 제한을 항상 표시하고, 이름·세 값·실행 결과를 같은 화면에서 명확히 확인</text>
+</svg>

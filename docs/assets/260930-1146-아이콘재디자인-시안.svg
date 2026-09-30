@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="780" viewBox="0 0 1800 780" role="img" aria-labelledby="title desc">
+  <title id="title">Focus Timer 앱 아이콘 재디자인 시안</title>
+  <desc id="desc">Quiet Arc, Focus Monogram, Flat Pomodoro 세 가지 미니멀 macOS 앱 아이콘 방향을 나란히 비교하는 시안입니다.</desc>
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#222a2b"/><stop offset="1" stop-color="#172022"/></linearGradient>
+    <linearGradient id="quietBg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#263638"/><stop offset="1" stop-color="#151d1f"/></linearGradient>
+    <linearGradient id="flatBg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#273337"/><stop offset="1" stop-color="#151d1f"/></linearGradient>
+    <linearGradient id="tomato" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f27568"/><stop offset="1" stop-color="#d64f58"/></linearGradient>
+    <filter id="shadow" x="-25%" y="-25%" width="150%" height="160%"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#000" flood-opacity=".35"/></filter>
+    <style>
+      .bg{fill:#101516}.panel{fill:url(#panel);stroke:#344143;stroke-width:2}.heading{font:700 24px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#f1f5f4}.sub{font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#aebcbc}.tag{font:700 14px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#78d6c5;letter-spacing:1.6px}.note{font:15px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#c8d3d2}.tiny{font:13px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#8e9d9e}
+    </style>
+  </defs>
+  <rect class="bg" width="1800" height="780"/>
+  <text class="heading" x="72" y="72">Focus Timer · 아이콘 재디자인 시안</text>
+  <text class="sub" x="72" y="104">현재 아이콘은 교체 대상입니다. 세 방향 중 하나를 선택하면 실제 AppIcon.icns로 제작합니다.</text>
+
+  <rect class="panel" x="60" y="150" width="520" height="560" rx="28"/>
+  <text class="tag" x="100" y="197">A · QUIET ARC</text>
+  <text class="note" x="100" y="230">다크 차콜 + 청록 진행 아크</text>
+  <g filter="url(#shadow)">
+    <rect x="145" y="270" width="350" height="350" rx="94" fill="url(#quietBg)"/>
+    <rect x="157" y="282" width="326" height="326" rx="82" fill="none" stroke="#8de4d1" stroke-opacity=".10" stroke-width="3"/>
+    <circle cx="320" cy="445" r="105" fill="none" stroke="#2c3d3f" stroke-width="18"/>
+    <path d="M320 340 A105 105 0 1 1 228 496" fill="none" stroke="#78d6c5" stroke-width="18" stroke-linecap="round"/>
+    <circle cx="320" cy="445" r="14" fill="#ecf7f5"/>
+    <circle cx="320" cy="445" r="5" fill="#78d6c5"/>
+    <path d="M320 380 V414" stroke="#eaf7f4" stroke-width="10" stroke-linecap="round"/>
+  </g>
+  <text class="note" x="100" y="662">가장 절제된 생산성 도구 인상</text>
+  <text class="tiny" x="100" y="688">참고 화면의 다크 톤·청록 포인트와 가장 가까움</text>
+
+  <rect class="panel" x="640" y="150" width="520" height="560" rx="28"/>
+  <text class="tag" x="680" y="197">B · FOCUS MONOGRAM</text>
+  <text class="note" x="680" y="230">기하학적인 F + 상태 점</text>
+  <g filter="url(#shadow)">
+    <rect x="725" y="270" width="350" height="350" rx="94" fill="#1d2527"/>
+    <rect x="737" y="282" width="326" height="326" rx="82" fill="none" stroke="#8de4d1" stroke-opacity=".10" stroke-width="3"/>
+    <rect x="832" y="350" width="34" height="190" rx="17" fill="#ecf7f5"/>
+    <rect x="850" y="350" width="126" height="34" rx="17" fill="#ecf7f5"/>
+    <rect x="850" y="425" width="95" height="34" rx="17" fill="#ecf7f5"/>
+    <circle cx="958" cy="520" r="18" fill="#78d6c5"/>
+  </g>
+  <text class="note" x="680" y="662">앱 이름을 직접 기억시키는 브랜드형</text>
+  <text class="tiny" x="680" y="688">심볼보다 제품명 정체성을 우선할 때 적합</text>
+
+  <rect class="panel" x="1220" y="150" width="520" height="560" rx="28"/>
+  <text class="tag" x="1260" y="197">C · FLAT POMODORO</text>
+  <text class="note" x="1260" y="230">단색 토마토 실루엣 + 청록 잎</text>
+  <g filter="url(#shadow)">
+    <rect x="1305" y="270" width="350" height="350" rx="94" fill="url(#flatBg)"/>
+    <rect x="1317" y="282" width="326" height="326" rx="82" fill="none" stroke="#8de4d1" stroke-opacity=".10" stroke-width="3"/>
+    <circle cx="1480" cy="463" r="107" fill="url(#tomato)"/>
+    <ellipse cx="1415" cy="417" rx="35" ry="58" fill="#ffb09b" fill-opacity=".28" transform="rotate(45 1415 417)"/>
+    <path d="M1477 358 C1436 327 1404 331 1378 354 C1410 381 1446 390 1477 378 C1464 360 1466 349 1477 358 Z" fill="#78d6c5"/>
+    <path d="M1483 358 C1524 327 1556 331 1582 354 C1550 381 1514 390 1483 378 C1496 360 1494 349 1483 358 Z" fill="#78d6c5"/>
+    <path d="M1480 366 C1480 339 1493 319 1512 304" fill="none" stroke="#9be7d5" stroke-linecap="round" stroke-width="16"/>
+  </g>
+  <text class="note" x="1260" y="662">뽀모도로 의미를 가장 직관적으로 유지</text>
+  <text class="tiny" x="1260" y="688">현재안보다 훨씬 평면적이고 간결한 대안</text>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Focus Timer Quiet Arc 앱 아이콘</title>
+  <desc id="desc">차콜색 둥근 사각형 위에 청록색 집중 진행 아크와 중앙 포커스 마커가 있는 미니멀 macOS 앱 아이콘입니다.</desc>
+  <defs>
+    <linearGradient id="background" x1="122" y1="100" x2="892" y2="924" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#29383a"/>
+      <stop offset="0.52" stop-color="#1c2729"/>
+      <stop offset="1" stop-color="#151d1f"/>
+    </linearGradient>
+    <linearGradient id="arc" x1="286" y1="224" x2="754" y2="766" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#94ead8"/>
+      <stop offset="0.5" stop-color="#78d6c5"/>
+      <stop offset="1" stop-color="#50bdae"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="20" stdDeviation="22" flood-color="#081214" flood-opacity="0.44"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" fill="none"/>
+  <rect x="72" y="72" width="880" height="880" rx="228" fill="url(#background)"/>
+  <rect x="94" y="94" width="836" height="836" rx="206" fill="none" stroke="#8fe7d5" stroke-opacity="0.12" stroke-width="4"/>
+
+  <g filter="url(#shadow)">
+    <circle cx="512" cy="512" r="276" fill="none" stroke="#2c3b3d" stroke-width="46"/>
+    <path d="M512 236 A276 276 0 1 1 270 643" fill="none" stroke="url(#arc)" stroke-linecap="round" stroke-width="46"/>
+    <path d="M257 690 A276 276 0 0 1 245 628" fill="none" stroke="#93e9d7" stroke-linecap="round" stroke-width="46"/>
+  </g>
+
+  <path d="M512 382 V462" fill="none" stroke="#edf8f6" stroke-linecap="round" stroke-width="28"/>
+  <circle cx="512" cy="534" r="38" fill="#edf8f6"/>
+  <circle cx="512" cy="534" r="13" fill="#78d6c5"/>
+</svg>
