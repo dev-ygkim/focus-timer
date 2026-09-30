@@ -108,7 +108,7 @@ public struct TimerPopoverView: View {
                 .frame(maxWidth: .infinity, alignment: .center)
 
             HStack(spacing: 10) {
-                Button("재설정") {
+                Button("취소") {
                     timerStore.reset()
                 }
                 .buttonStyle(FocusSecondaryButtonStyle())

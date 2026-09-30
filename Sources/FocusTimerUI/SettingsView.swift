@@ -49,7 +49,7 @@ public struct SettingsView: View {
                 .foregroundStyle(FocusTheme.textSecondary)
 
             if timerStore.state.isRunning {
-                notice("실행 중에는 일시정지하거나 재설정한 뒤 타이머 설정을 바꿀 수 있습니다.")
+                notice("실행 중에는 일시정지하거나 취소한 뒤 타이머 설정을 바꿀 수 있습니다.")
             }
 
             if let validationMessage {

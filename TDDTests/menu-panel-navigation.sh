@@ -22,5 +22,12 @@ grep -Fq 'case profiles' "$POPOVER"
 grep -Fq 'onClose: {' "$POPOVER"
 grep -Fq 'let onClose: () -> Void' "$SETTINGS"
 grep -Fq 'let onClose: () -> Void' "$PROFILES"
+grep -Fq 'Button("취소")' "$POPOVER"
+grep -Fq '일시정지하거나 취소한 뒤' "$SETTINGS"
+
+if grep -Fq 'Button("재설정")' "$POPOVER" || grep -Fq '재설정' "$SETTINGS"; then
+  echo "타이머 되돌리기 버튼 이름과 안내 문구는 '취소'여야 합니다." >&2
+  exit 1
+fi
 
 printf 'Menu panel navigation test passed.\n'
