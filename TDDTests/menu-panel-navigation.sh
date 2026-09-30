@@ -2,9 +2,9 @@
 set -euo pipefail
 
 ROOT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
-POPOVER="$ROOT_DIR/Sources/FocusTimerApp/TimerPopoverView.swift"
-SETTINGS="$ROOT_DIR/Sources/FocusTimerApp/SettingsView.swift"
-PROFILES="$ROOT_DIR/Sources/FocusTimerApp/ProfileListView.swift"
+POPOVER="$ROOT_DIR/Sources/FocusTimerUI/TimerPopoverView.swift"
+SETTINGS="$ROOT_DIR/Sources/FocusTimerUI/SettingsView.swift"
+PROFILES="$ROOT_DIR/Sources/FocusTimerUI/ProfileListView.swift"
 
 if grep -Fq '.sheet(' "$POPOVER"; then
   echo "MenuBarExtra 안에서 sheet를 사용하면 안 됩니다." >&2

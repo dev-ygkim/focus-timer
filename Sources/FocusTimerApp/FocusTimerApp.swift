@@ -1,5 +1,6 @@
 import SwiftUI
 import FocusTimerCore
+import FocusTimerUI
 
 @main
 struct FocusTimerApp: App {
@@ -7,14 +8,14 @@ struct FocusTimerApp: App {
     @StateObject private var profileStore: ProfileStore
 
     init() {
-        let alertService = AlertService()
-        _timerStore = StateObject(wrappedValue: PomodoroStore(alertService: alertService))
+        _timerStore = StateObject(wrappedValue: PomodoroStore())
         _profileStore = StateObject(wrappedValue: ProfileStore())
     }
 
     var body: some Scene {
         MenuBarExtra {
             TimerPopoverView(timerStore: timerStore, profileStore: profileStore)
+                .preferredColorScheme(.dark)
         } label: {
             Text(timerStore.menuBarText)
                 .monospacedDigit()

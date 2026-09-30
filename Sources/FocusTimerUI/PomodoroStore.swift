@@ -3,9 +3,9 @@ import Foundation
 import FocusTimerCore
 
 @MainActor
-final class PomodoroStore: ObservableObject {
-    @Published private(set) var state: PomodoroState
-    @Published private(set) var alertSettings: AlertSettings
+public final class PomodoroStore: ObservableObject {
+    @Published public private(set) var state: PomodoroState
+    @Published public private(set) var alertSettings: AlertSettings
 
     private let defaults: UserDefaults
     private let alertService: any AlertNotifying
@@ -17,9 +17,9 @@ final class PomodoroStore: ObservableObject {
         static let alertSettings = "FocusTimer.alertSettings"
     }
 
-    init(defaults: UserDefaults = .standard, alertService: (any AlertNotifying)? = nil) {
+    public init(defaults: UserDefaults = .standard, usesSystemAlerts: Bool = true) {
         self.defaults = defaults
-        self.alertService = alertService ?? AlertService()
+        alertService = usesSystemAlerts ? AlertService() : SilentAlertService()
 
         let configuration = Self.decode(TimerConfiguration.self, from: defaults, key: StorageKey.configuration) ?? .standard
         state = PomodoroState(configuration: configuration)
@@ -36,7 +36,7 @@ final class PomodoroStore: ObservableObject {
         return String(format: "%02d:%02d", minutes, seconds)
     }
 
-    var menuBarText: String {
+    public var menuBarText: String {
         state.phase == .completed ? "완료" : "\(state.phase.displayName) \(formattedTime)"
     }
 
@@ -104,6 +104,10 @@ final class PomodoroStore: ObservableObject {
             alertService.requestNotificationAuthorization()
         }
         beginCountdown()
+    }
+
+    func previewSound() {
+        alertService.playTransitionSound()
     }
 
     private func beginCountdown() {

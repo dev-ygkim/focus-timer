@@ -26,6 +26,7 @@ fi
 ditto "$BINARY_PATH" "$APP_PATH/Contents/MacOS/FocusTimer"
 cp "$ROOT_DIR/Resources/Info.plist" "$APP_PATH/Contents/Info.plist"
 ditto "$ROOT_DIR/Resources/AppIcon.icns" "$APP_PATH/Contents/Resources/AppIcon.icns"
+ditto "$ROOT_DIR/Resources/transition.wav" "$APP_PATH/Contents/Resources/transition.wav"
 plutil -lint "$APP_PATH/Contents/Info.plist" >/dev/null
 
 mkdir -p "$STAGING_DIR"

@@ -6,12 +6,21 @@ import FocusTimerCore
 protocol AlertNotifying: AnyObject {
     func requestNotificationAuthorization()
     func send(_ alert: TimerAlert, settings: AlertSettings)
+    func playTransitionSound()
+}
+
+final class SilentAlertService: AlertNotifying {
+    func requestNotificationAuthorization() {}
+    func send(_ alert: TimerAlert, settings: AlertSettings) {}
+    func playTransitionSound() {}
 }
 
 final class AlertService: NSObject, AlertNotifying {
     private let center = UNUserNotificationCenter.current()
+    private let transitionSound: NSSound?
 
     override init() {
+        transitionSound = Self.loadTransitionSound()
         super.init()
         center.delegate = self
     }
@@ -22,7 +31,7 @@ final class AlertService: NSObject, AlertNotifying {
 
     func send(_ alert: TimerAlert, settings: AlertSettings) {
         if settings.soundEnabled {
-            NSSound.beep()
+            playTransitionSound()
         }
 
         guard settings.notificationsEnabled else {
@@ -35,6 +44,28 @@ final class AlertService: NSObject, AlertNotifying {
 
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         center.add(request) { _ in }
+    }
+
+    func playTransitionSound() {
+        guard let transitionSound else {
+            NSSound.beep()
+            return
+        }
+
+        transitionSound.stop()
+        if !transitionSound.play() {
+            NSSound.beep()
+        }
+    }
+
+    private static func loadTransitionSound() -> NSSound? {
+        guard let url = Bundle.main.url(forResource: "transition", withExtension: "wav") else {
+            return nil
+        }
+
+        let sound = NSSound(contentsOf: url, byReference: false)
+        sound?.volume = 1.0
+        return sound
     }
 }
 
