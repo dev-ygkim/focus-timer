@@ -106,8 +106,8 @@ public final class PomodoroStore: ObservableObject {
         beginCountdown()
     }
 
-    func previewSound() {
-        alertService.playTransitionSound()
+    func previewSound(_ soundChoice: AlertSoundChoice) {
+        alertService.playSound(soundChoice)
     }
 
     private func beginCountdown() {

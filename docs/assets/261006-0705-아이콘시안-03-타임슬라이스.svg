@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Focus Timer 아이콘 시안 3: 타임 슬라이스</title>
+  <desc id="desc">짙은 차콜색 둥근 사각형 위에 청록색 시간 조각과 시계 중심점을 배치한 macOS 앱 아이콘입니다.</desc>
+  <defs>
+    <linearGradient id="bg" x1="122" y1="102" x2="904" y2="938" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#263035"/>
+      <stop offset="0.55" stop-color="#131f23"/>
+      <stop offset="1" stop-color="#0b1215"/>
+    </linearGradient>
+    <linearGradient id="slice" x1="420" y1="258" x2="762" y2="690" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c3fff1"/>
+      <stop offset="0.44" stop-color="#7ce0cc"/>
+      <stop offset="1" stop-color="#3ba998"/>
+    </linearGradient>
+    <radialGradient id="face" cx="0" cy="0" r="1" gradientTransform="translate(512 512) rotate(90) scale(318)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1d3538"/>
+      <stop offset="1" stop-color="#101b1e"/>
+    </radialGradient>
+    <filter id="shadow" x="-35%" y="-35%" width="170%" height="180%">
+      <feDropShadow dx="0" dy="24" stdDeviation="26" flood-color="#020708" flood-opacity="0.68"/>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" fill="none"/>
+  <rect x="64" y="64" width="896" height="896" rx="232" fill="url(#bg)"/>
+  <circle cx="512" cy="512" r="306" fill="url(#face)" stroke="#8de4d3" stroke-opacity="0.16" stroke-width="12" filter="url(#shadow)"/>
+  <path d="M512 512V223A289 289 0 0 1 778 626Z" fill="url(#slice)"/>
+  <path d="M512 512V223A289 289 0 0 1 778 626Z" fill="none" stroke="#d8fff5" stroke-opacity="0.28" stroke-linejoin="round" stroke-width="8"/>
+  <circle cx="512" cy="512" r="82" fill="#11282a" stroke="#a1eddd" stroke-width="12"/>
+  <path d="M512 455v57l42 26" fill="none" stroke="#edfffa" stroke-linecap="round" stroke-linejoin="round" stroke-width="20"/>
+  <circle cx="512" cy="512" r="14" fill="#7ee1cd"/>
+  <g fill="#c7fff2" opacity="0.65">
+    <rect x="499" y="250" width="26" height="54" rx="13"/>
+    <rect x="718" y="486" width="54" height="26" rx="13"/>
+    <rect x="293" y="486" width="54" height="26" rx="13"/>
+    <rect x="499" y="720" width="26" height="54" rx="13"/>
+  </g>
+</svg>

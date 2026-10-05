@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Focus Timer 아이콘 시안 2: 모래시계</title>
+  <desc id="desc">짙은 남청색 둥근 사각형 위에 청록색 모래가 흐르는 미니멀 모래시계가 있는 macOS 앱 아이콘입니다.</desc>
+  <defs>
+    <linearGradient id="bg" x1="120" y1="104" x2="902" y2="928" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#182b35"/>
+      <stop offset="0.58" stop-color="#101d25"/>
+      <stop offset="1" stop-color="#091116"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="354" y1="278" x2="672" y2="744" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#d2fff5"/>
+      <stop offset="0.45" stop-color="#83e3d0"/>
+      <stop offset="1" stop-color="#45b9a8"/>
+    </linearGradient>
+    <linearGradient id="sand" x1="432" y1="350" x2="614" y2="692" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#bcf8e9"/>
+      <stop offset="1" stop-color="#55c7b6"/>
+    </linearGradient>
+    <filter id="shadow" x="-35%" y="-35%" width="170%" height="180%">
+      <feDropShadow dx="0" dy="26" stdDeviation="28" flood-color="#010608" flood-opacity="0.68"/>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" fill="none"/>
+  <rect x="64" y="64" width="896" height="896" rx="232" fill="url(#bg)"/>
+  <path d="M292 254H732M292 770H732" stroke="#8ee6d5" stroke-linecap="round" stroke-width="58" filter="url(#shadow)"/>
+  <path d="M370 285C370 404 431 446 512 512c81 66 142 108 142 227" fill="none" stroke="url(#glass)" stroke-linecap="round" stroke-linejoin="round" stroke-width="42"/>
+  <path d="M654 285C654 404 593 446 512 512c-81 66-142 108-142 227" fill="none" stroke="url(#glass)" stroke-linecap="round" stroke-linejoin="round" stroke-width="42"/>
+  <path d="M410 344h204c-11 72-47 108-102 150-55-42-91-78-102-150Z" fill="url(#sand)" opacity="0.94"/>
+  <path d="M512 489v78" stroke="#a9f3e4" stroke-linecap="round" stroke-width="18"/>
+  <path d="M402 690c23-63 72-104 110-132 38 28 87 69 110 132H402Z" fill="url(#sand)"/>
+  <circle cx="512" cy="512" r="14" fill="#effff9"/>
+  <path d="M338 208h348" stroke="#d8fff5" stroke-opacity="0.24" stroke-linecap="round" stroke-width="8"/>
+</svg>

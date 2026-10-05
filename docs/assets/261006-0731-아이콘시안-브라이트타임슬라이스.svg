@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Focus Timer 브라이트 타임 슬라이스 아이콘 시안</title>
+  <desc id="desc">선라이즈 그라디언트 바탕 위에 크림색 타이머 다이얼과 보라색 시간 진행 조각을 배치한 밝고 현대적인 macOS 앱 아이콘입니다.</desc>
+  <defs>
+    <linearGradient id="background" x1="118" y1="96" x2="912" y2="940" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFBF5C"/>
+      <stop offset="0.42" stop-color="#FF7389"/>
+      <stop offset="1" stop-color="#755CF4"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="0" cy="0" r="1" gradientTransform="translate(260 232) rotate(48) scale(480 510)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF2B4" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#FFF2B4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="violetGlow" cx="0" cy="0" r="1" gradientTransform="translate(790 814) rotate(-132) scale(470 510)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4D48D8" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#4D48D8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="face" x1="288" y1="254" x2="740" y2="770" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFDF7"/>
+      <stop offset="1" stop-color="#FFECE7"/>
+    </linearGradient>
+    <linearGradient id="progress" x1="488" y1="242" x2="798" y2="694" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#594DDE"/>
+      <stop offset="0.48" stop-color="#A947E8"/>
+      <stop offset="1" stop-color="#FF5E9B"/>
+    </linearGradient>
+    <linearGradient id="clock" x1="446" y1="446" x2="602" y2="602" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#403B91"/>
+      <stop offset="1" stop-color="#272659"/>
+    </linearGradient>
+    <filter id="iconShadow" x="-30%" y="-30%" width="160%" height="175%">
+      <feDropShadow dx="0" dy="28" stdDeviation="30" flood-color="#4A1C63" flood-opacity="0.28"/>
+    </filter>
+    <filter id="dialShadow" x="-35%" y="-35%" width="170%" height="180%">
+      <feDropShadow dx="0" dy="22" stdDeviation="20" flood-color="#582748" flood-opacity="0.26"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" fill="none"/>
+  <g filter="url(#iconShadow)">
+    <rect x="58" y="58" width="908" height="908" rx="238" fill="url(#background)"/>
+    <rect x="82" y="82" width="860" height="860" rx="216" fill="none" stroke="#FFF9F2" stroke-opacity="0.36" stroke-width="7"/>
+  </g>
+  <rect x="58" y="58" width="908" height="908" rx="238" fill="url(#sunGlow)"/>
+  <rect x="58" y="58" width="908" height="908" rx="238" fill="url(#violetGlow)"/>
+
+  <g filter="url(#dialShadow)">
+    <circle cx="512" cy="520" r="316" fill="url(#face)"/>
+    <circle cx="512" cy="520" r="291" fill="none" stroke="#FFFFFF" stroke-opacity="0.72" stroke-width="14"/>
+  </g>
+
+  <path d="M512 520V230A290 290 0 0 1 790 705Z" fill="url(#progress)"/>
+  <path d="M512 520V230A290 290 0 0 1 790 705Z" fill="none" stroke="#FFFFFF" stroke-opacity="0.58" stroke-linejoin="round" stroke-width="10"/>
+  <path d="M526 248A272 272 0 0 1 772 478" fill="none" stroke="#E8D9FF" stroke-opacity="0.62" stroke-linecap="round" stroke-width="18"/>
+
+  <g fill="#353477" opacity="0.68">
+    <rect x="495" y="254" width="34" height="62" rx="17"/>
+    <rect x="716" y="503" width="62" height="34" rx="17"/>
+    <rect x="495" y="724" width="34" height="62" rx="17"/>
+    <rect x="246" y="503" width="62" height="34" rx="17"/>
+  </g>
+
+  <circle cx="512" cy="520" r="112" fill="#FFFDF9" stroke="#FEFAF5" stroke-width="18"/>
+  <circle cx="512" cy="520" r="91" fill="url(#clock)"/>
+  <path d="M512 461v63l52 34" fill="none" stroke="#FFF9F3" stroke-linecap="round" stroke-linejoin="round" stroke-width="24"/>
+  <circle cx="512" cy="520" r="17" fill="#FFCF5E"/>
+
+  <path d="M238 330c40-94 112-163 211-199" fill="none" stroke="#FFFFFF" stroke-opacity="0.42" stroke-linecap="round" stroke-width="25"/>
+  <circle cx="761" cy="284" r="25" fill="#FFF0A8" fill-opacity="0.86"/>
+  <circle cx="804" cy="327" r="12" fill="#FFF7D4" fill-opacity="0.7"/>
+</svg>

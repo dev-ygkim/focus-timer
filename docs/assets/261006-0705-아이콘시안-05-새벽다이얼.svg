@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Focus Timer 아이콘 시안 5: 새벽 다이얼</title>
+  <desc id="desc">짙은 청록색 둥근 사각형 위에 청록색 반원 다이얼과 수평선이 있는 차분한 macOS 앱 아이콘입니다.</desc>
+  <defs>
+    <linearGradient id="bg" x1="120" y1="100" x2="900" y2="936" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1b3033"/>
+      <stop offset="0.57" stop-color="#102225"/>
+      <stop offset="1" stop-color="#081417"/>
+    </linearGradient>
+    <linearGradient id="dial" x1="362" y1="340" x2="667" y2="658" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#d5fff5"/>
+      <stop offset="0.5" stop-color="#81e2cf"/>
+      <stop offset="1" stop-color="#3cae9e"/>
+    </linearGradient>
+    <radialGradient id="aura" cx="0" cy="0" r="1" gradientTransform="translate(512 590) rotate(90) scale(270)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7ddfcf" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#7ddfcf" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-35%" y="-35%" width="170%" height="180%">
+      <feDropShadow dx="0" dy="26" stdDeviation="28" flood-color="#02090a" flood-opacity="0.68"/>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" fill="none"/>
+  <rect x="64" y="64" width="896" height="896" rx="232" fill="url(#bg)"/>
+  <circle cx="512" cy="596" r="302" fill="url(#aura)"/>
+  <g filter="url(#shadow)">
+    <path d="M286 624A226 226 0 0 1 738 624" fill="none" stroke="#263f41" stroke-linecap="round" stroke-width="56"/>
+    <path d="M286 624A226 226 0 0 1 650 444" fill="none" stroke="url(#dial)" stroke-linecap="round" stroke-width="56"/>
+  </g>
+  <path d="M244 670H780" stroke="#d2fff4" stroke-opacity="0.82" stroke-linecap="round" stroke-width="30"/>
+  <path d="M344 722H680" stroke="#65cbb9" stroke-opacity="0.42" stroke-linecap="round" stroke-width="16"/>
+  <circle cx="512" cy="624" r="62" fill="#143236" stroke="#a3efdf" stroke-width="10"/>
+  <path d="M512 579v46l34 21" fill="none" stroke="#effffb" stroke-linecap="round" stroke-linejoin="round" stroke-width="17"/>
+  <circle cx="512" cy="624" r="12" fill="#7fe0cd"/>
+  <g stroke="#bff9ec" stroke-linecap="round" stroke-width="14" opacity="0.7">
+    <path d="M512 335v34"/>
+    <path d="M364 398l24 24"/>
+    <path d="M660 398l-24 24"/>
+  </g>
+</svg>

@@ -13,6 +13,7 @@ public struct TimerPopoverView: View {
     }
 
     @State private var panel = Panel.timer
+    @FocusState private var isPrimaryActionFocused: Bool
 
     public init(timerStore: PomodoroStore, profileStore: ProfileStore) {
         self.timerStore = timerStore
@@ -101,6 +102,10 @@ public struct TimerPopoverView: View {
                 Label(primaryActionTitle, systemImage: primaryActionSymbol)
             }
             .buttonStyle(FocusPrimaryButtonStyle(tint: phaseColor))
+            .focused($isPrimaryActionFocused)
+            .onAppear {
+                isPrimaryActionFocused = false
+            }
 
             Text(timerStore.nextStepText)
                 .font(.system(size: 13, weight: .medium, design: .rounded))
@@ -108,7 +113,7 @@ public struct TimerPopoverView: View {
                 .frame(maxWidth: .infinity, alignment: .center)
 
             HStack(spacing: 10) {
-                Button("취소") {
+                Button("중지") {
                     timerStore.reset()
                 }
                 .buttonStyle(FocusSecondaryButtonStyle())
@@ -125,7 +130,7 @@ public struct TimerPopoverView: View {
             }
 
             HStack {
-                Text("Focus Timer")
+                Text("Focus Timer v\(AppVersion.current)")
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .foregroundStyle(FocusTheme.textSecondary)
                 Spacer()

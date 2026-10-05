@@ -15,6 +15,7 @@ public struct SettingsView: View {
     @State private var focusCount = ""
     @State private var soundEnabled = true
     @State private var notificationsEnabled = true
+    @State private var soundChoice = AlertSoundChoice.appDefault
     @State private var validationMessage: String?
 
     public var body: some View {
@@ -39,8 +40,29 @@ public struct SettingsView: View {
             .opacity(timerStore.state.isRunning ? 0.45 : 1)
             .allowsHitTesting(!timerStore.state.isRunning)
 
+            HStack {
+                Text("알림 사운드")
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                    .foregroundStyle(FocusTheme.textPrimary)
+                Spacer()
+                Picker("알림 사운드", selection: $soundChoice) {
+                    ForEach(AlertSoundChoice.allCases) { choice in
+                        Text(choice.displayName).tag(choice)
+                    }
+                }
+                .labelsHidden()
+                .pickerStyle(.menu)
+                .frame(width: 178)
+                .disabled(!soundEnabled)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(FocusTheme.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .opacity(timerStore.state.isRunning || !soundEnabled ? 0.45 : 1)
+            .allowsHitTesting(!timerStore.state.isRunning)
+
             Button("소리 미리 듣기") {
-                timerStore.previewSound()
+                timerStore.previewSound(soundChoice)
             }
             .buttonStyle(FocusSecondaryButtonStyle())
 
@@ -49,7 +71,7 @@ public struct SettingsView: View {
                 .foregroundStyle(FocusTheme.textSecondary)
 
             if timerStore.state.isRunning {
-                notice("실행 중에는 일시정지하거나 취소한 뒤 타이머 설정을 바꿀 수 있습니다.")
+                notice("실행 중에는 일시정지하거나 중지한 뒤 타이머 설정을 바꿀 수 있습니다.")
             }
 
             if let validationMessage {
@@ -153,6 +175,7 @@ public struct SettingsView: View {
         focusCount = String(configuration.focusCount)
         soundEnabled = timerStore.alertSettings.soundEnabled
         notificationsEnabled = timerStore.alertSettings.notificationsEnabled
+        soundChoice = timerStore.alertSettings.soundChoice
         validationMessage = nil
     }
 
@@ -169,7 +192,11 @@ public struct SettingsView: View {
 
         timerStore.apply(
             configuration: configuration,
-            alertSettings: AlertSettings(soundEnabled: soundEnabled, notificationsEnabled: notificationsEnabled)
+            alertSettings: AlertSettings(
+                soundEnabled: soundEnabled,
+                notificationsEnabled: notificationsEnabled,
+                soundChoice: soundChoice
+            )
         )
         onClose()
     }

@@ -26,13 +26,69 @@ public struct TimerConfiguration: Codable, Equatable, Sendable {
     }
 }
 
+public enum AlertSoundChoice: String, CaseIterable, Codable, Equatable, Hashable, Identifiable, Sendable {
+    case appDefault
+    case basso = "Basso"
+    case blow = "Blow"
+    case bottle = "Bottle"
+    case frog = "Frog"
+    case funk = "Funk"
+    case glass = "Glass"
+    case hero = "Hero"
+    case morse = "Morse"
+    case ping = "Ping"
+    case pop = "Pop"
+    case purr = "Purr"
+    case sosumi = "Sosumi"
+    case submarine = "Submarine"
+    case tink = "Tink"
+
+    public var id: String {
+        rawValue
+    }
+
+    public var displayName: String {
+        self == .appDefault ? "앱 기본 전환음" : rawValue
+    }
+
+    public var systemSoundFileName: String? {
+        self == .appDefault ? nil : "\(rawValue).aiff"
+    }
+}
+
 public struct AlertSettings: Codable, Equatable {
     public var soundEnabled: Bool
     public var notificationsEnabled: Bool
+    public var soundChoice: AlertSoundChoice
 
-    public init(soundEnabled: Bool = true, notificationsEnabled: Bool = true) {
+    public init(
+        soundEnabled: Bool = true,
+        notificationsEnabled: Bool = true,
+        soundChoice: AlertSoundChoice = .appDefault
+    ) {
         self.soundEnabled = soundEnabled
         self.notificationsEnabled = notificationsEnabled
+        self.soundChoice = soundChoice
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case soundEnabled
+        case notificationsEnabled
+        case soundChoice
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        soundEnabled = try container.decodeIfPresent(Bool.self, forKey: .soundEnabled) ?? true
+        notificationsEnabled = try container.decodeIfPresent(Bool.self, forKey: .notificationsEnabled) ?? true
+        soundChoice = (try? container.decode(AlertSoundChoice.self, forKey: .soundChoice)) ?? .appDefault
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(soundEnabled, forKey: .soundEnabled)
+        try container.encode(notificationsEnabled, forKey: .notificationsEnabled)
+        try container.encode(soundChoice, forKey: .soundChoice)
     }
 }
 

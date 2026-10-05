@@ -17,6 +17,16 @@ struct FocusTimerTDDTests {
             ("paused timer does not advance", testPausedTimerDoesNotAdvanceOrEmitAlert),
             ("profile starts a new first focus session", testProfileStartsNewFirstFocusSessionImmediately),
             ("configuration rejects non-positive values", testConfigurationRejectsZeroOrNegativeValues),
+            ("alert settings preserve selected system sound", {
+                let settings = AlertSettings(soundEnabled: false, notificationsEnabled: true, soundChoice: .glass)
+                let decoded = try JSONDecoder().decode(AlertSettings.self, from: JSONEncoder().encode(settings))
+                try expectEqual(decoded, settings)
+            }),
+            ("legacy alert settings use app default sound", {
+                let legacyData = Data(#"{"soundEnabled":false,"notificationsEnabled":true}"#.utf8)
+                let settings = try JSONDecoder().decode(AlertSettings.self, from: legacyData)
+                try expectEqual(settings.soundChoice, .appDefault)
+            }),
             ("focus alert copy", testFocusEndedAlertDescribesStartingBreak),
             ("break alert copy", testBreakEndedAlertDescribesNextFocusSession),
             ("completion alert copy", testCompletionAlertDescribesFinishedFocusSessions),
