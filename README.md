@@ -14,7 +14,9 @@
 타이머 패널
   ├─ 시작 / 일시정지 / 중지
   ├─ 설정 패널
-  └─ 프로필 패널
+  ├─ 프로필 패널
+  ├─ 항상 켜두기 (창을 다른 창 위에 고정)
+  └─ 종료
 ```
 
 ## 1. 타이머 패널
@@ -28,6 +30,8 @@
 - **시작**을 누르면 타이머가 진행되고, 진행 중에는 **일시정지**로 바뀝니다.
 - **중지**는 현재 계획의 첫 집중 시간으로 되돌립니다.
 - 마지막 집중이 끝나면 마지막 휴식 없이 완료됩니다.
+- 하단의 **항상 켜두기**를 체크하면 지금 열려 있는 창이 그대로 다른 창 위에 고정됩니다. 다른 곳을 클릭해도 닫히지 않으며, 창 배경을 끌어 원하는 위치로 옮길 수 있습니다. 체크를 해제하면 다시 바깥을 클릭할 때 닫힙니다.
+- 오른쪽 아래 **종료** 버튼은 앱을 종료합니다. 실수로 누르지 않도록 체크박스와 간격을 두었습니다.
 
 ## 2. 설정 패널
 
@@ -74,6 +78,14 @@
 - 프로필에는 타이머 조합만 저장합니다. 소리·macOS 알림은 모든 프로필에 공통인 전역 설정입니다.
 - 삭제는 프로필 패널 안의 확인 영역에서 처리합니다.
 
+## 구조와 상태 흐름
+
+![Focus Timer 구성과 상태 전이](docs/assets/260930-0751-구조및상태흐름.svg)
+
+- 메뉴 막대 아이콘과 창은 `MenuBarController`(`NSStatusItem` + `NSPanel`)가 직접 관리합니다. SwiftUI `MenuBarExtra`는 바깥을 클릭하면 창을 강제로 닫아 **항상 켜두기**를 구현할 수 없기 때문입니다.
+- `PomodoroStore`가 1초마다 남은 시간을 갱신하고, 상태 전이는 `FocusTimerCore`의 `PomodoroState`가 계산합니다.
+- 설정과 프로필은 `UserDefaults`에 저장되며, 네트워크·계정·분석 수집은 사용하지 않습니다.
+
 ## 빌드와 설치
 
 ```bash
@@ -105,6 +117,7 @@ bash TDDTests/install-overwrite.sh
 bash TDDTests/menu-panel-navigation.sh
 bash TDDTests/transition-sound.sh
 bash TDDTests/custom-menu-ui-style.sh
+bash TDDTests/always-on-top.sh
 bash TDDTests/readme-snapshot.sh
 bash TDDTests/app-version.sh
 ```
