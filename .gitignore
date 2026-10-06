@@ -2,3 +2,5 @@
 .build/
 dist/
 .swiftpm/
+docs/history/
+reference/
