@@ -60,21 +60,32 @@ public struct AlertSettings: Codable, Equatable {
     public var soundEnabled: Bool
     public var notificationsEnabled: Bool
     public var soundChoice: AlertSoundChoice
+    /// 알림 소리를 연달아 재생할 횟수입니다. 소리가 1초 안팎으로 짧아 놓치지 않도록 기본 3회입니다.
+    public var soundRepeatCount: Int
+
+    public static let soundRepeatRange = 1...5
 
     public init(
         soundEnabled: Bool = true,
         notificationsEnabled: Bool = true,
-        soundChoice: AlertSoundChoice = .appDefault
+        soundChoice: AlertSoundChoice = .appDefault,
+        soundRepeatCount: Int = 3
     ) {
         self.soundEnabled = soundEnabled
         self.notificationsEnabled = notificationsEnabled
         self.soundChoice = soundChoice
+        self.soundRepeatCount = Self.clampedRepeatCount(soundRepeatCount)
+    }
+
+    private static func clampedRepeatCount(_ count: Int) -> Int {
+        min(max(count, soundRepeatRange.lowerBound), soundRepeatRange.upperBound)
     }
 
     private enum CodingKeys: String, CodingKey {
         case soundEnabled
         case notificationsEnabled
         case soundChoice
+        case soundRepeatCount
     }
 
     public init(from decoder: any Decoder) throws {
@@ -82,6 +93,7 @@ public struct AlertSettings: Codable, Equatable {
         soundEnabled = try container.decodeIfPresent(Bool.self, forKey: .soundEnabled) ?? true
         notificationsEnabled = try container.decodeIfPresent(Bool.self, forKey: .notificationsEnabled) ?? true
         soundChoice = (try? container.decode(AlertSoundChoice.self, forKey: .soundChoice)) ?? .appDefault
+        soundRepeatCount = Self.clampedRepeatCount(try container.decodeIfPresent(Int.self, forKey: .soundRepeatCount) ?? 3)
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -89,6 +101,7 @@ public struct AlertSettings: Codable, Equatable {
         try container.encode(soundEnabled, forKey: .soundEnabled)
         try container.encode(notificationsEnabled, forKey: .notificationsEnabled)
         try container.encode(soundChoice, forKey: .soundChoice)
+        try container.encode(soundRepeatCount, forKey: .soundRepeatCount)
     }
 }
 

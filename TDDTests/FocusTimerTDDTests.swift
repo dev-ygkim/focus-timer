@@ -27,6 +27,22 @@ struct FocusTimerTDDTests {
                 let settings = try JSONDecoder().decode(AlertSettings.self, from: legacyData)
                 try expectEqual(settings.soundChoice, .appDefault)
             }),
+            ("alert settings repeat sound 3 times by default", {
+                try expectEqual(AlertSettings().soundRepeatCount, 3)
+                let legacyData = Data(#"{"soundEnabled":true,"notificationsEnabled":true,"soundChoice":"Glass"}"#.utf8)
+                try expectEqual(try JSONDecoder().decode(AlertSettings.self, from: legacyData).soundRepeatCount, 3)
+            }),
+            ("alert settings preserve sound repeat count", {
+                let settings = AlertSettings(soundRepeatCount: 5)
+                let decoded = try JSONDecoder().decode(AlertSettings.self, from: JSONEncoder().encode(settings))
+                try expectEqual(decoded.soundRepeatCount, 5)
+            }),
+            ("alert settings clamp sound repeat count to 1...5", {
+                try expectEqual(AlertSettings(soundRepeatCount: 0).soundRepeatCount, 1)
+                try expectEqual(AlertSettings(soundRepeatCount: 9).soundRepeatCount, 5)
+                let outOfRange = Data(#"{"soundRepeatCount":9}"#.utf8)
+                try expectEqual(try JSONDecoder().decode(AlertSettings.self, from: outOfRange).soundRepeatCount, 5)
+            }),
             ("focus alert copy", testFocusEndedAlertDescribesStartingBreak),
             ("break alert copy", testBreakEndedAlertDescribesNextFocusSession),
             ("completion alert copy", testCompletionAlertDescribesFinishedFocusSessions),

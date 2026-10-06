@@ -43,7 +43,7 @@
 
   <rect class="alert" x="70" y="530" width="260" height="90" rx="12"/>
   <text class="label mid" x="200" y="562">AlertService</text>
-  <text class="small mid" x="200" y="586">전환음 · 시스템 사운드</text>
+  <text class="small mid" x="200" y="586">전환음 · 시스템 사운드 · 1~5회 반복</text>
   <text class="note mid" x="200" y="606">macOS 로컬 알림 (켜진 설정만)</text>
 
   <rect class="box" x="400" y="530" width="250" height="90" rx="12"/>
@@ -130,6 +130,6 @@
   <rect class="alert" x="1070" y="600" width="310" height="116" rx="14"/>
   <text class="label mid" x="1225" y="628">자연 종료 이벤트 → AlertService</text>
   <text class="small mid" x="1225" y="652">집중 완료 · 휴식 완료 · 타이머 완료</text>
-  <text class="small mid" x="1225" y="675">켜진 설정만 전환음 1회</text>
+  <text class="small mid" x="1225" y="675">켜진 설정만 소리 반복 (기본 3회)</text>
   <text class="small mid" x="1225" y="698">+ macOS 로컬 알림</text>
 </svg>

@@ -16,6 +16,7 @@ public struct SettingsView: View {
     @State private var soundEnabled = true
     @State private var notificationsEnabled = true
     @State private var soundChoice = AlertSoundChoice.appDefault
+    @State private var soundRepeatCount = AlertSettings().soundRepeatCount
     @State private var validationMessage: String?
 
     public var body: some View {
@@ -61,8 +62,29 @@ public struct SettingsView: View {
             .opacity(timerStore.state.isRunning || !soundEnabled ? 0.45 : 1)
             .allowsHitTesting(!timerStore.state.isRunning)
 
+            HStack {
+                Text("소리 반복")
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                    .foregroundStyle(FocusTheme.textPrimary)
+                Spacer()
+                Picker("소리 반복", selection: $soundRepeatCount) {
+                    ForEach(AlertSettings.soundRepeatRange, id: \.self) { count in
+                        Text("\(count)회").tag(count)
+                    }
+                }
+                .labelsHidden()
+                .pickerStyle(.menu)
+                .frame(width: 178)
+                .disabled(!soundEnabled)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(FocusTheme.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .opacity(timerStore.state.isRunning || !soundEnabled ? 0.45 : 1)
+            .allowsHitTesting(!timerStore.state.isRunning)
+
             Button("소리 미리 듣기") {
-                timerStore.previewSound(soundChoice)
+                timerStore.previewSound(soundChoice, repeatCount: soundRepeatCount)
             }
             .buttonStyle(FocusSecondaryButtonStyle())
 
@@ -176,6 +198,7 @@ public struct SettingsView: View {
         soundEnabled = timerStore.alertSettings.soundEnabled
         notificationsEnabled = timerStore.alertSettings.notificationsEnabled
         soundChoice = timerStore.alertSettings.soundChoice
+        soundRepeatCount = timerStore.alertSettings.soundRepeatCount
         validationMessage = nil
     }
 
@@ -195,7 +218,8 @@ public struct SettingsView: View {
             alertSettings: AlertSettings(
                 soundEnabled: soundEnabled,
                 notificationsEnabled: notificationsEnabled,
-                soundChoice: soundChoice
+                soundChoice: soundChoice,
+                soundRepeatCount: soundRepeatCount
             )
         )
         onClose()

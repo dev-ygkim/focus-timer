@@ -106,8 +106,8 @@ public final class PomodoroStore: ObservableObject {
         beginCountdown()
     }
 
-    func previewSound(_ soundChoice: AlertSoundChoice) {
-        alertService.playSound(soundChoice)
+    func previewSound(_ soundChoice: AlertSoundChoice, repeatCount: Int) {
+        alertService.playSound(soundChoice, repeatCount: repeatCount)
     }
 
     private func beginCountdown() {
