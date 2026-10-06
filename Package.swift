@@ -36,7 +36,8 @@ let package = Package(
                 "transition-sound.sh",
                 "custom-menu-ui-style.sh",
                 "readme-snapshot.sh",
-                "app-version.sh"
+                "app-version.sh",
+                "always-on-top.sh"
             ]
         )
     ]

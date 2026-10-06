@@ -5,6 +5,7 @@ import FocusTimerCore
 public struct TimerPopoverView: View {
     @ObservedObject var timerStore: PomodoroStore
     @ObservedObject var profileStore: ProfileStore
+    @Binding var isPinned: Bool
 
     private enum Panel {
         case timer
@@ -15,9 +16,10 @@ public struct TimerPopoverView: View {
     @State private var panel = Panel.timer
     @FocusState private var isPrimaryActionFocused: Bool
 
-    public init(timerStore: PomodoroStore, profileStore: ProfileStore) {
+    public init(timerStore: PomodoroStore, profileStore: ProfileStore, isPinned: Binding<Bool>) {
         self.timerStore = timerStore
         self.profileStore = profileStore
+        _isPinned = isPinned
     }
 
     public var body: some View {
@@ -134,12 +136,16 @@ public struct TimerPopoverView: View {
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .foregroundStyle(FocusTheme.textSecondary)
                 Spacer()
+                Toggle("항상 켜두기", isOn: $isPinned)
+                    .toggleStyle(.checkbox)
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .foregroundStyle(FocusTheme.textSecondary)
                 Button("종료") {
                     NSApplication.shared.terminate(nil)
                 }
-                .buttonStyle(.plain)
-                .font(.system(size: 12, weight: .medium, design: .rounded))
-                .foregroundStyle(FocusTheme.textSecondary)
+                .buttonStyle(FocusCompactButtonStyle(tint: FocusTheme.danger))
+                // 체크박스와 붙어 있으면 실수로 종료할 수 있어 간격을 둡니다.
+                .padding(.leading, 20)
             }
         }
         .padding(22)
