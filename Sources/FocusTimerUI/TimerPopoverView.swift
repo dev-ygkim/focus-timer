@@ -6,6 +6,7 @@ public struct TimerPopoverView: View {
     @ObservedObject var timerStore: PomodoroStore
     @ObservedObject var profileStore: ProfileStore
     @Binding var isPinned: Bool
+    @Binding var pinnedOpacity: Double
 
     private enum Panel {
         case timer
@@ -16,10 +17,16 @@ public struct TimerPopoverView: View {
     @State private var panel = Panel.timer
     @FocusState private var isPrimaryActionFocused: Bool
 
-    public init(timerStore: PomodoroStore, profileStore: ProfileStore, isPinned: Binding<Bool>) {
+    public init(
+        timerStore: PomodoroStore,
+        profileStore: ProfileStore,
+        isPinned: Binding<Bool>,
+        pinnedOpacity: Binding<Double>
+    ) {
         self.timerStore = timerStore
         self.profileStore = profileStore
         _isPinned = isPinned
+        _pinnedOpacity = pinnedOpacity
     }
 
     public var body: some View {
@@ -60,6 +67,16 @@ public struct TimerPopoverView: View {
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(FocusTheme.elevatedSurface, in: Capsule())
+            }
+            // 항상 켜두기 중에만 창 전체 투명도를 조절하는 바를 상단 정가운데에 보여 줍니다.
+            .overlay {
+                if isPinned {
+                    Slider(value: $pinnedOpacity, in: 0.3...1)
+                        .controlSize(.mini)
+                        .frame(width: 96)
+                        .help("투명도 \(Int((pinnedOpacity * 100).rounded()))%")
+                        .accessibilityLabel("투명도")
+                }
             }
 
             ZStack {

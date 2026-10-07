@@ -14,8 +14,19 @@ public final class MenuBarController: NSObject, ObservableObject {
         didSet {
             panel.level = isPinned ? .floating : .popUpMenu
             panel.isMovable = isPinned
+            applyOpacity()
         }
     }
+
+    /// 항상 켜두기 중에만 적용되는 창 전체 불투명도(0.3~1). 앱을 다시 실행해도 유지됩니다.
+    @Published var pinnedOpacity = UserDefaults.standard.object(forKey: MenuBarController.pinnedOpacityKey) as? Double ?? 1 {
+        didSet {
+            UserDefaults.standard.set(pinnedOpacity, forKey: Self.pinnedOpacityKey)
+            applyOpacity()
+        }
+    }
+
+    private static let pinnedOpacityKey = "pinnedOpacity"
 
     private let timerStore: PomodoroStore
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -52,6 +63,10 @@ public final class MenuBarController: NSObject, ObservableObject {
         }
     }
 
+    private func applyOpacity() {
+        panel.alphaValue = isPinned ? pinnedOpacity : 1
+    }
+
     private func updateTitle() {
         statusItem.button?.title = timerStore.menuBarText
     }
@@ -80,14 +95,19 @@ public final class MenuBarController: NSObject, ObservableObject {
     }
 }
 
-/// 체크박스가 `isPinned` 변경을 바로 반영하도록 컨트롤러를 관찰합니다.
+/// 체크박스와 투명도 조절 바가 컨트롤러 변경을 바로 반영하도록 관찰합니다.
 private struct PanelContent: View {
     @ObservedObject var controller: MenuBarController
     let timerStore: PomodoroStore
     let profileStore: ProfileStore
 
     var body: some View {
-        TimerPopoverView(timerStore: timerStore, profileStore: profileStore, isPinned: $controller.isPinned)
+        TimerPopoverView(
+            timerStore: timerStore,
+            profileStore: profileStore,
+            isPinned: $controller.isPinned,
+            pinnedOpacity: $controller.pinnedOpacity
+        )
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }

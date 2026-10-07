@@ -67,7 +67,7 @@ struct FocusTimerReadmeSnapshot {
     ) -> AnyView {
         switch panel {
         case "timer":
-            return AnyView(TimerPopoverView(timerStore: timerStore, profileStore: profileStore, isPinned: .constant(false)))
+            return AnyView(TimerPopoverView(timerStore: timerStore, profileStore: profileStore, isPinned: .constant(false), pinnedOpacity: .constant(1)))
         case "settings":
             return AnyView(SettingsView(timerStore: timerStore, onClose: {}))
         case "profiles":

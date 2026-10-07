@@ -27,4 +27,10 @@ grep -Fq '.toggleStyle(.checkbox)' "$TIMER"
 grep -A4 'Button("종료")' "$TIMER" | grep -Fq '.buttonStyle(FocusCompactButtonStyle(tint: FocusTheme.danger))'
 grep -A6 'Button("종료")' "$TIMER" | grep -Fq '.padding(.leading, 20)'
 
+# 고정 중에만 창 전체 투명도를 적용하고, 조절 바는 상단 가운데에 고정 중일 때만 보입니다.
+grep -Fq 'panel.alphaValue = isPinned ? pinnedOpacity : 1' "$CONTROLLER"
+grep -Fq 'UserDefaults.standard.set(pinnedOpacity, forKey: Self.pinnedOpacityKey)' "$CONTROLLER"
+grep -Fq 'pinnedOpacity: $controller.pinnedOpacity' "$CONTROLLER"
+grep -A3 'if isPinned {' "$TIMER" | grep -Fq 'Slider(value: $pinnedOpacity, in: 0.3...1)'
+
 printf 'Always on top test passed.\n'
