@@ -37,7 +37,8 @@ let package = Package(
                 "custom-menu-ui-style.sh",
                 "readme-snapshot.sh",
                 "app-version.sh",
-                "always-on-top.sh"
+                "always-on-top.sh",
+                "app-signature.sh"
             ]
         )
     ]

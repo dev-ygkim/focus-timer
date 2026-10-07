@@ -29,6 +29,11 @@ ditto "$ROOT_DIR/Resources/AppIcon.icns" "$APP_PATH/Contents/Resources/AppIcon.i
 ditto "$ROOT_DIR/Resources/transition.wav" "$APP_PATH/Contents/Resources/transition.wav"
 plutil -lint "$APP_PATH/Contents/Info.plist" >/dev/null
 
+# 번들 전체를 ad-hoc 서명해 Info.plist와 번들 ID를 서명에 묶습니다.
+# 링커 서명만 있으면 macOS가 앱을 번들 ID로 식별하지 못해 알림 권한을 거부합니다(UNErrorDomain Code=1).
+codesign --force --sign - "$APP_PATH"
+codesign --verify --strict "$APP_PATH"
+
 mkdir -p "$STAGING_DIR"
 ditto "$APP_PATH" "$STAGING_DIR/FocusTimer.app"
 ln -s /Applications "$STAGING_DIR/Applications"

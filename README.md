@@ -64,6 +64,7 @@
 - 휴식이 끝나면 다음 집중이 자동으로 시작됩니다.
 - 마지막 집중이 끝나면 **타이머 완료** 상태가 됩니다.
 - 켜진 설정에 따라 각 자연 종료 시 선택한 알림 소리(기본 3회 반복)와 macOS 로컬 알림을 보냅니다.
+- 처음 타이머를 시작하면 macOS가 알림 허용 여부를 묻습니다. 알림이 오지 않으면 **시스템 설정 > 알림 > FocusTimer**에서 알림 허용을 켜세요.
 
 ## 4. 프로필 패널
 
@@ -99,7 +100,9 @@
 - `dist/FocusTimer.app`
 - `dist/FocusTimer.dmg`
 
-`install.sh`는 `~/Applications/FocusTimer.app`에 설치합니다. 기존 앱이 있으면 새 앱을 임시로 준비한 뒤 안전하게 교체하며, 프로필과 설정은 유지됩니다.
+`install.sh`는 `~/Applications/FocusTimer.app`에 설치합니다. 기존 앱이 있으면 새 앱을 임시로 준비한 뒤 안전하게 교체하며, 프로필과 설정은 유지됩니다. 이미 실행 중인 앱은 **종료**한 뒤 다시 실행해야 새 버전이 적용됩니다.
+
+`build.sh`는 앱 번들 전체를 ad-hoc 서명합니다. 서명이 없으면 macOS가 앱을 번들 ID로 식별하지 못해 알림 권한을 거부하므로, macOS 로컬 알림이 표시되지 않습니다. `TDDTests/app-signature.sh`가 서명 상태를 검사합니다.
 
 ## 버전
 
@@ -115,6 +118,7 @@
 ```bash
 swift run FocusTimerTDDTests
 bash TDDTests/install-overwrite.sh
+bash TDDTests/app-signature.sh
 bash TDDTests/menu-panel-navigation.sh
 bash TDDTests/transition-sound.sh
 bash TDDTests/custom-menu-ui-style.sh
