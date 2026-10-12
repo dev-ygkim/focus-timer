@@ -38,7 +38,7 @@
 
   <rect class="profile" x="400" y="350" width="250" height="90" rx="12"/>
   <text class="label mid" x="525" y="382">ProfileStore</text>
-  <text class="small mid" x="525" y="406">프로필 저장 · 삭제</text>
+  <text class="small mid" x="525" y="406">프로필 저장 · 수정 · 삭제</text>
   <text class="note mid" x="525" y="426">최대 10개</text>
 
   <rect class="alert" x="70" y="530" width="260" height="90" rx="12"/>
