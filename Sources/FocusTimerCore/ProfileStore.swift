@@ -5,6 +5,7 @@ public enum ProfileStoreError: Error, Equatable {
     case emptyName
     case duplicateName
     case maximumProfilesReached
+    case profileNotFound
 }
 
 public final class ProfileStore: ObservableObject {
@@ -51,6 +52,29 @@ public final class ProfileStore: ObservableObject {
 
         let profile = TimerProfile(name: trimmedName, configuration: configuration)
         profiles.append(profile)
+        persist()
+        return .success(profile)
+    }
+
+    /// 이름과 타이머 값을 바꿉니다. id와 목록 순서는 그대로 유지하고, 개수 제한은 적용하지 않습니다.
+    @discardableResult
+    public func update(id: UUID, name: String, configuration: TimerConfiguration) -> Result<TimerProfile, ProfileStoreError> {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmedName.isEmpty else {
+            return .failure(.emptyName)
+        }
+
+        guard let index = profiles.firstIndex(where: { $0.id == id }) else {
+            return .failure(.profileNotFound)
+        }
+
+        guard !profiles.contains(where: { $0.id != id && normalizedName($0.name) == normalizedName(trimmedName) }) else {
+            return .failure(.duplicateName)
+        }
+
+        let profile = TimerProfile(id: id, name: trimmedName, configuration: configuration)
+        profiles[index] = profile
         persist()
         return .success(profile)
     }

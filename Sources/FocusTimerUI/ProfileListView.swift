@@ -15,6 +15,11 @@ public struct ProfileListView: View {
     @State private var profileName = ""
     @State private var validationMessage: String?
     @State private var profileToDelete: TimerProfile?
+    @State private var profileToEdit: TimerProfile?
+    @State private var editName = ""
+    @State private var editFocusMinutes = ""
+    @State private var editBreakMinutes = ""
+    @State private var editFocusCount = ""
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -66,46 +71,51 @@ public struct ProfileListView: View {
 
             Divider().overlay(FocusTheme.border)
 
-            Text("현재 설정을 프로필로 저장")
-                .font(.system(size: 15, weight: .semibold, design: .rounded))
-                .foregroundStyle(FocusTheme.textPrimary)
+            // 수정 중에는 이름 입력란이 두 개 보이지 않도록 저장 영역 대신 수정 폼을 보여 줍니다.
+            if let profileToEdit {
+                editForm(profileToEdit)
+            } else {
+                Text("현재 설정을 프로필로 저장")
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .foregroundStyle(FocusTheme.textPrimary)
 
-            TextField("프로필 이름", text: $profileName)
-                .textFieldStyle(.plain)
-                .font(.system(size: 15, weight: .medium, design: .rounded))
-                .foregroundStyle(FocusTheme.textPrimary)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 12)
-                .background(FocusTheme.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .stroke(FocusTheme.border, lineWidth: 1)
+                TextField("프로필 이름", text: $profileName)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                    .foregroundStyle(FocusTheme.textPrimary)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 12)
+                    .background(FocusTheme.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .stroke(FocusTheme.border, lineWidth: 1)
+                    }
+                    .disabled(timerStore.state.isRunning || !profileStore.canSaveAnotherProfile)
+                    .opacity(timerStore.state.isRunning || !profileStore.canSaveAnotherProfile ? 0.45 : 1)
+
+                Text(summary(for: timerStore.configuration))
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .foregroundStyle(FocusTheme.textSecondary)
+
+                if !profileStore.canSaveAnotherProfile {
+                    notice("프로필은 최대 10개입니다. 삭제 후 새로 저장하세요.")
                 }
+
+                if timerStore.state.isRunning {
+                    notice("실행 중에는 현재 설정을 새 프로필로 저장할 수 없습니다.")
+                }
+
+                if let validationMessage {
+                    notice(validationMessage, color: FocusTheme.danger)
+                }
+
+                Button("프로필 저장") {
+                    saveProfile()
+                }
+                .buttonStyle(FocusPrimaryButtonStyle())
                 .disabled(timerStore.state.isRunning || !profileStore.canSaveAnotherProfile)
                 .opacity(timerStore.state.isRunning || !profileStore.canSaveAnotherProfile ? 0.45 : 1)
-
-            Text(summary(for: timerStore.configuration))
-                .font(.system(size: 12, weight: .medium, design: .rounded))
-                .foregroundStyle(FocusTheme.textSecondary)
-
-            if !profileStore.canSaveAnotherProfile {
-                notice("프로필은 최대 10개입니다. 삭제 후 새로 저장하세요.")
             }
-
-            if timerStore.state.isRunning {
-                notice("실행 중에는 현재 설정을 새 프로필로 저장할 수 없습니다.")
-            }
-
-            if let validationMessage {
-                notice(validationMessage, color: FocusTheme.danger)
-            }
-
-            Button("프로필 저장") {
-                saveProfile()
-            }
-            .buttonStyle(FocusPrimaryButtonStyle())
-            .disabled(timerStore.state.isRunning || !profileStore.canSaveAnotherProfile)
-            .opacity(timerStore.state.isRunning || !profileStore.canSaveAnotherProfile ? 0.45 : 1)
         }
         .padding(22)
         .frame(width: 390)
@@ -154,6 +164,9 @@ public struct ProfileListView: View {
                 Text(summary(for: profile.configuration))
                     .font(.system(size: 11, weight: .medium, design: .rounded))
                     .foregroundStyle(FocusTheme.textSecondary)
+                Text("총 \(profile.configuration.totalDurationText) 소요")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundStyle(FocusTheme.mint)
             }
 
             Spacer(minLength: 0)
@@ -165,6 +178,17 @@ public struct ProfileListView: View {
             .buttonStyle(FocusCompactButtonStyle())
 
             Button {
+                beginEditing(profile)
+            } label: {
+                Image(systemName: "pencil")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(FocusTheme.textSecondary)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(profile.name) 수정")
+
+            Button {
+                profileToEdit = nil
                 profileToDelete = profile
             } label: {
                 Image(systemName: "trash")
@@ -175,6 +199,73 @@ public struct ProfileListView: View {
             .accessibilityLabel("\(profile.name) 삭제")
         }
         .padding(12)
+        .background(FocusTheme.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(FocusTheme.border, lineWidth: 1)
+        }
+    }
+
+    private func editForm(_ profile: TimerProfile) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("‘\(profile.name)’ 프로필 수정")
+                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                .foregroundStyle(FocusTheme.textPrimary)
+
+            TextField("프로필 이름", text: $editName)
+                .textFieldStyle(.plain)
+                .font(.system(size: 15, weight: .medium, design: .rounded))
+                .foregroundStyle(FocusTheme.textPrimary)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+                .background(FocusTheme.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(FocusTheme.border, lineWidth: 1)
+                }
+
+            numberField(title: "집중 시간", text: $editFocusMinutes, unit: "분")
+            numberField(title: "휴식 시간", text: $editBreakMinutes, unit: "분")
+            numberField(title: "집중 횟수", text: $editFocusCount, unit: "회")
+
+            if let validationMessage {
+                notice(validationMessage, color: FocusTheme.danger)
+            }
+
+            HStack(spacing: 10) {
+                Button("취소") {
+                    profileToEdit = nil
+                    validationMessage = nil
+                }
+                .buttonStyle(FocusSecondaryButtonStyle())
+
+                Button("수정 저장") {
+                    updateProfile(profile)
+                }
+                .buttonStyle(FocusPrimaryButtonStyle())
+            }
+        }
+    }
+
+    private func numberField(title: String, text: Binding<String>, unit: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .foregroundStyle(FocusTheme.textPrimary)
+            Spacer()
+            TextField("", text: text)
+                .textFieldStyle(.plain)
+                .multilineTextAlignment(.trailing)
+                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                .foregroundStyle(FocusTheme.textPrimary)
+                .frame(width: 72)
+            Text(unit)
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundStyle(FocusTheme.textSecondary)
+                .frame(width: 22, alignment: .trailing)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
         .background(FocusTheme.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -205,6 +296,36 @@ public struct ProfileListView: View {
         }
     }
 
+    private func beginEditing(_ profile: TimerProfile) {
+        profileToDelete = nil
+        profileToEdit = profile
+        editName = profile.name
+        editFocusMinutes = String(profile.configuration.focusMinutes)
+        editBreakMinutes = String(profile.configuration.breakMinutes)
+        editFocusCount = String(profile.configuration.focusCount)
+        validationMessage = nil
+    }
+
+    private func updateProfile(_ profile: TimerProfile) {
+        guard
+            let focus = Int(editFocusMinutes),
+            let rest = Int(editBreakMinutes),
+            let count = Int(editFocusCount),
+            let configuration = TimerConfiguration(focusMinutes: focus, breakMinutes: rest, focusCount: count)
+        else {
+            validationMessage = "집중 시간, 휴식 시간, 집중 횟수에는 1 이상의 정수를 입력하세요."
+            return
+        }
+
+        switch profileStore.update(id: profile.id, name: editName, configuration: configuration) {
+        case .success:
+            profileToEdit = nil
+            validationMessage = nil
+        case let .failure(error):
+            validationMessage = message(for: error)
+        }
+    }
+
     private func message(for error: ProfileStoreError) -> String {
         switch error {
         case .emptyName:
@@ -213,6 +334,8 @@ public struct ProfileListView: View {
             return "같은 이름의 프로필이 이미 있습니다."
         case .maximumProfilesReached:
             return "프로필은 최대 10개입니다."
+        case .profileNotFound:
+            return "이미 삭제된 프로필입니다."
         }
     }
 }

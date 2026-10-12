@@ -17,6 +17,28 @@ struct FocusTimerTDDTests {
             ("paused timer does not advance", testPausedTimerDoesNotAdvanceOrEmitAlert),
             ("profile starts a new first focus session", testProfileStartsNewFirstFocusSessionImmediately),
             ("configuration rejects non-positive values", testConfigurationRejectsZeroOrNegativeValues),
+            ("total minutes skip the break after the last focus", {
+                try expectEqual(try makeConfiguration(focus: 25, rest: 5, count: 4).totalMinutes, 115)
+                try expectEqual(try makeConfiguration(focus: 50, rest: 10, count: 1).totalMinutes, 50)
+            }),
+            ("total duration reads in hours and minutes", {
+                try expectEqual(try makeConfiguration(focus: 25, rest: 5, count: 4).totalDurationText, "1시간 55분")
+                try expectEqual(try makeConfiguration(focus: 50, rest: 10, count: 1).totalDurationText, "50분")
+                try expectEqual(try makeConfiguration(focus: 50, rest: 20, count: 2).totalDurationText, "2시간")
+            }),
+            ("remaining total covers every phase left", {
+                var state = PomodoroState(configuration: try makeConfiguration(focus: 25, rest: 5, count: 2))
+                try expectEqual(state.remainingTotalSeconds, (25 + 5 + 25) * 60)
+                state.start()
+                state.updateRemainingSeconds(100)
+                try expectEqual(state.remainingTotalSeconds, 100 + (5 + 25) * 60)
+                _ = state.finishCurrentPhase()
+                try expectEqual(state.remainingTotalSeconds, (5 + 25) * 60)
+                _ = state.finishCurrentPhase()
+                _ = state.finishCurrentPhase()
+                try expectEqual(state.phase, .completed)
+                try expectEqual(state.remainingTotalSeconds, 0)
+            }),
             ("alert settings preserve selected system sound", {
                 let settings = AlertSettings(soundEnabled: false, notificationsEnabled: true, soundChoice: .glass)
                 let decoded = try JSONDecoder().decode(AlertSettings.self, from: JSONEncoder().encode(settings))
@@ -50,7 +72,15 @@ struct FocusTimerTDDTests {
             ("profile save rejects blank name", testSaveRejectsBlankName),
             ("profile save rejects duplicate name", testSaveRejectsNamesThatOnlyDifferByCaseOrWhitespace),
             ("profile store rejects eleventh profile", testStoreRejectsEleventhProfileWithoutChangingExistingProfiles),
-            ("profile delete frees a slot", testDeleteRemovesOnlySelectedProfileAndFreesSlot)
+            ("profile delete frees a slot", testDeleteRemovesOnlySelectedProfileAndFreesSlot),
+            ("profile update keeps id and order and persists", testUpdateReplacesNameAndConfigurationInPlace),
+            ("profile update validates name", testUpdateRejectsBlankOrOtherProfilesNameButAllowsItsOwn),
+            ("profile update rejects missing profile", {
+                let environment = makeDefaults()
+                defer { environment.defaults.removePersistentDomain(forName: environment.suiteName) }
+                let store = ProfileStore(defaults: environment.defaults)
+                try expectEqual(store.update(id: UUID(), name: "Ghost", configuration: .standard), .failure(.profileNotFound))
+            })
         ]
 
         var failures = 0
@@ -249,6 +279,36 @@ struct FocusTimerTDDTests {
 
         try expectEqual(store.profiles, [second])
         try expectTrue(store.canSaveAnotherProfile)
+    }
+
+    private static func testUpdateReplacesNameAndConfigurationInPlace() throws {
+        let environment = makeDefaults()
+        defer { environment.defaults.removePersistentDomain(forName: environment.suiteName) }
+        let store = ProfileStore(defaults: environment.defaults)
+        let first = try store.save(name: "First", configuration: .standard).get()
+        let second = try store.save(name: "Second", configuration: .standard).get()
+        let newConfiguration = try makeConfiguration(focus: 50, rest: 10, count: 2)
+
+        let updated = try store.update(id: first.id, name: "  Deep Work  ", configuration: newConfiguration).get()
+
+        try expectEqual(updated, TimerProfile(id: first.id, name: "Deep Work", configuration: newConfiguration))
+        try expectEqual(store.profiles, [updated, second])
+        try expectEqual(ProfileStore(defaults: environment.defaults).profiles, [updated, second])
+    }
+
+    private static func testUpdateRejectsBlankOrOtherProfilesNameButAllowsItsOwn() throws {
+        let environment = makeDefaults()
+        defer { environment.defaults.removePersistentDomain(forName: environment.suiteName) }
+        let store = ProfileStore(defaults: environment.defaults)
+        let first = try store.save(name: "First", configuration: .standard).get()
+        let second = try store.save(name: "Second", configuration: .standard).get()
+
+        try expectEqual(store.update(id: first.id, name: "   ", configuration: .standard), .failure(.emptyName))
+        try expectEqual(store.update(id: first.id, name: " second ", configuration: .standard), .failure(.duplicateName))
+        try expectEqual(store.profiles, [first, second])
+
+        let renamed = try store.update(id: first.id, name: "FIRST", configuration: .standard).get()
+        try expectEqual(renamed.name, "FIRST")
     }
 
     private static func makeConfiguration(focus: Int, rest: Int, count: Int) throws -> TimerConfiguration {

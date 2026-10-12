@@ -54,6 +54,19 @@ public final class PomodoroStore: ObservableObject {
         }
     }
 
+    /// 예: "완료 예정 오후 2시 30분". 대기·일시정지 중이면 지금 시작했을 때의 완료 시각입니다.
+    var finishTimeText: String {
+        let finishDate = Date().addingTimeInterval(TimeInterval(state.remainingTotalSeconds))
+        return "완료 예정 \(Self.clockFormatter.string(from: finishDate))"
+    }
+
+    private static let clockFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "a h시 m분"
+        return formatter
+    }()
+
     func start() {
         if state.phase == .completed {
             state.reset()

@@ -24,6 +24,25 @@ public struct TimerConfiguration: Codable, Equatable, Sendable {
     public var breakSeconds: Int {
         breakMinutes * 60
     }
+
+    /// 마지막 집중 뒤에는 휴식 없이 완료되므로 휴식은 (집중 횟수 - 1)번만 셉니다.
+    public var totalMinutes: Int {
+        focusMinutes * focusCount + breakMinutes * (focusCount - 1)
+    }
+
+    /// 예: 115분 → "1시간 55분", 50분 → "50분", 120분 → "2시간"
+    public var totalDurationText: String {
+        let hours = totalMinutes / 60
+        let minutes = totalMinutes % 60
+        switch (hours, minutes) {
+        case (0, _):
+            return "\(minutes)분"
+        case (_, 0):
+            return "\(hours)시간"
+        default:
+            return "\(hours)시간 \(minutes)분"
+        }
+    }
 }
 
 public enum AlertSoundChoice: String, CaseIterable, Codable, Equatable, Hashable, Identifiable, Sendable {
@@ -168,6 +187,19 @@ public struct PomodoroState: Equatable {
     public private(set) var currentFocusCount: Int
     public private(set) var remainingSeconds: Int
     public private(set) var isRunning: Bool
+
+    /// 현재 단계의 남은 시간에 이후 단계들의 시간을 더한 값입니다. 마지막 집중 뒤에는 휴식이 없습니다.
+    public var remainingTotalSeconds: Int {
+        let focusesLeft = configuration.focusCount - currentFocusCount
+        switch phase {
+        case .focus:
+            return remainingSeconds + focusesLeft * (configuration.breakSeconds + configuration.focusSeconds)
+        case .breakTime:
+            return remainingSeconds + focusesLeft * configuration.focusSeconds + (focusesLeft - 1) * configuration.breakSeconds
+        case .completed:
+            return 0
+        }
+    }
 
     public init(configuration: TimerConfiguration) {
         self.configuration = configuration

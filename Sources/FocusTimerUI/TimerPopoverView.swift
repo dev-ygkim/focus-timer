@@ -126,10 +126,21 @@ public struct TimerPopoverView: View {
                 isPrimaryActionFocused = false
             }
 
-            Text(timerStore.nextStepText)
-                .font(.system(size: 13, weight: .medium, design: .rounded))
-                .foregroundStyle(FocusTheme.textSecondary)
-                .frame(maxWidth: .infinity, alignment: .center)
+            VStack(spacing: 4) {
+                Text(timerStore.nextStepText)
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundStyle(FocusTheme.textSecondary)
+
+                if timerStore.state.phase != .completed {
+                    // 대기·일시정지 중에는 시계만 흐르므로 1분마다 완료 예정 시각을 다시 계산합니다.
+                    TimelineView(.everyMinute) { _ in
+                        Text(timerStore.finishTimeText)
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                            .foregroundStyle(phaseColor)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
 
             HStack(spacing: 10) {
                 Button("중지") {
