@@ -96,6 +96,7 @@
 
 - 메뉴 막대 아이콘과 창은 `MenuBarController`(`NSStatusItem` + `NSPanel`)가 직접 관리합니다. SwiftUI `MenuBarExtra`는 바깥을 클릭하면 창을 강제로 닫아 **항상 켜두기**를 구현할 수 없기 때문입니다.
 - `PomodoroStore`가 1초마다 남은 시간을 갱신하고, 상태 전이는 `FocusTimerCore`의 `PomodoroState`가 계산합니다.
+- 단계가 자연 종료되면 `PomodoroStore`가 `AlertService`로 소리·macOS 알림을 보내고, 화면 깜빡임 알림이 켜져 있으면 `flashRequests`로 `MenuBarController`에 알려 창을 띄워 깜빡입니다.
 - 설정, 프로필, 항상 켜두기 투명도는 `UserDefaults`에 저장되며, 네트워크·계정·분석 수집은 사용하지 않습니다.
 
 ## 빌드와 설치
@@ -116,7 +117,7 @@
 
 ## 버전
 
-현재 버전은 **1.0.0**이며, 타이머 패널 왼쪽 아래에 `Focus Timer v1.0.0`으로 표시됩니다.
+현재 버전은 **1.1.0**이며, 타이머 패널 왼쪽 아래에 `Focus Timer v1.1.0`으로 표시됩니다.
 
 버전을 올릴 때는 아래 두 곳을 같은 `MAJOR.MINOR.PATCH` 값으로 바꿉니다. `TDDTests/app-version.sh`가 두 값이 같은지 검사합니다.
 

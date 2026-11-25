@@ -15,7 +15,7 @@
   </defs>
   <rect class="bg" width="1440" height="780" rx="18"/>
   <text class="title" x="54" y="58">Focus Timer · 구성과 상태 전이</text>
-  <text class="note" x="54" y="86">메뉴바 아이콘과 창은 MenuBarController가 직접 관리합니다. 자연 종료 이벤트만 소리·macOS 로컬 알림으로 전달됩니다.</text>
+  <text class="note" x="54" y="86">메뉴바 아이콘과 창은 MenuBarController가 직접 관리합니다. 자연 종료 이벤트만 소리·macOS 로컬 알림·화면 깜빡임으로 전달됩니다.</text>
 
   <!-- 앱 구성 -->
   <rect class="panel" x="40" y="120" width="640" height="620" rx="16"/>
@@ -59,6 +59,7 @@
 
   <path class="line" d="M120 350 V280"/>
   <text class="note" x="130" y="320">메뉴바 시간 갱신</text>
+  <text class="alertnote" x="130" y="340">자연 종료 시 창 깜빡임</text>
 
   <path class="profileline" d="M590 280 V350"/>
   <text class="note end" x="582" y="320">프로필 패널</text>
@@ -131,5 +132,5 @@
   <text class="label mid" x="1225" y="628">자연 종료 이벤트 → AlertService</text>
   <text class="small mid" x="1225" y="652">집중 완료 · 휴식 완료 · 타이머 완료</text>
   <text class="small mid" x="1225" y="675">켜진 설정만 소리 반복 (기본 3회)</text>
-  <text class="small mid" x="1225" y="698">+ macOS 로컬 알림</text>
+  <text class="small mid" x="1225" y="698">+ macOS 로컬 알림 · 화면 깜빡임</text>
 </svg>
