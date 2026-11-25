@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>화면 깜빡임 알림 샘플</title>
+<!-- 외부 리소스 없이 이 파일 하나로 동작하는 시안입니다. 색상·크기는 FocusTheme.swift, 실제 패널 스크린샷 기준입니다. -->
+<style>
+:root{
+  --page:#0a0d0e; --bg:#0e1213; --surface:#1d2526; --elev:#252e2e; --border:#3c4d4d;
+  --mint:#78d6c5; --rest:#ab99ed; --text:#ebf5f2; --text2:#9eb3b0; --ink:#0b1716; --danger:#f56e6b;
+  --check:#2f7cf6;
+  --phase:var(--mint);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--text);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif}
+main{max-width:1340px;margin:0 auto;padding:32px 24px 72px}
+h1{font-size:24px;margin:0 0 6px}
+h2{font-size:18px;margin:44px 0 6px}
+.lead{color:var(--text2);margin:0 0 22px}
+.sub{color:var(--text2);margin:0 0 16px}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+@media (max-width:1000px){.stage{grid-template-columns:1fr}}
+
+/* ── 가짜 데스크톱 ───────────────────────────── */
+.desktop{position:relative;height:640px;min-width:760px;border-radius:14px;overflow:hidden;border:1px solid #2a3436;
+  background:radial-gradient(circle at 18% 28%,#2c4b5b,transparent 55%),radial-gradient(circle at 82% 85%,#4a3a62,transparent 50%),#18232c}
+.menubar{position:absolute;inset:0 0 auto 0;height:26px;display:flex;align-items:center;gap:18px;padding:0 12px;
+  background:rgba(22,26,28,.78);backdrop-filter:blur(18px);font-size:13px;color:#e8eef0;z-index:7}
+.menubar .right{margin-left:auto;display:flex;gap:14px;align-items:center}
+.status{padding:1px 8px;border-radius:5px;font-variant-numeric:tabular-nums;cursor:pointer;user-select:none}
+.status.on{background:rgba(255,255,255,.2)}
+.appwin{position:absolute;left:36px;top:58px;width:500px;height:390px;border-radius:10px;background:#1e1f22;border:1px solid #33363b;box-shadow:0 22px 60px rgba(0,0,0,.5)}
+.appwin .bar{height:30px;display:flex;align-items:center;gap:7px;padding:0 12px;border-bottom:1px solid #2c2f33;color:#8b929a;font-size:12px}
+.appwin .bar i{width:11px;height:11px;border-radius:50%;background:#ff5f57}
+.appwin .bar i+i{background:#febc2e}.appwin .bar i+i+i{background:#28c840;margin-right:8px}
+.code{padding:14px 16px;font:12.5px/1.75 ui-monospace,Menlo,monospace;color:#8d97a0;white-space:pre}
+.code b{color:#c792ea;font-weight:400}.code em{color:#89ddff;font-style:normal}
+.caret{display:inline-block;width:7px;height:15px;background:#e8eef0;vertical-align:-3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.edge{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;
+  box-shadow:inset 0 0 0 5px var(--phase),inset 0 0 160px 28px var(--phase)}
+.banner{position:absolute;top:34px;right:10px;width:330px;padding:10px 12px;border-radius:14px;z-index:8;display:flex;gap:10px;
+  background:rgba(48,52,56,.86);backdrop-filter:blur(20px);box-shadow:0 10px 30px rgba(0,0,0,.4);font-size:12.5px;
+  transition:opacity .3s,transform .3s;opacity:0;transform:translateX(20px);pointer-events:none}
+.banner.show{opacity:1;transform:none}
+.banner .ic{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,#78d6c5,#3c7d73);flex:none}
+.banner b{display:block;font-size:13px}
+.hint{position:absolute;left:12px;bottom:10px;font-size:12px;color:rgba(232,238,240,.65);z-index:3}
+
+/* ── 타이머 패널 (TimerPopoverView 복제) ───────── */
+.panel{position:absolute;top:30px;width:360px;padding:22px;border-radius:12px;background:var(--bg);z-index:6;
+  box-shadow:0 18px 50px rgba(0,0,0,.6);transition:opacity .16s,transform .16s;cursor:default}
+.panel.hidden{opacity:0!important;transform:translateY(-6px);pointer-events:none}
+.panel.ring{box-shadow:0 0 0 2px var(--phase),0 18px 50px rgba(0,0,0,.6)}
+.hdr{display:flex;align-items:center;justify-content:space-between;position:relative}
+.hdr .ph{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--phase)}
+.cap{font-size:12px;color:var(--text2);background:var(--elev);border-radius:99px;padding:4px 10px}
+.opacity{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:4px;border-radius:2px;background:#4a5658;display:none}
+.opacity::after{content:"";position:absolute;left:50%;top:-4px;width:12px;height:12px;border-radius:50%;background:#dfe6e5;transform:translateX(-50%)}
+.panel.pinned .opacity{display:block}
+.dial{position:relative;width:236px;height:236px;margin:16px auto 8px}
+.dial svg{position:absolute;inset:0}
+.dial .time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dial .time b{font-size:50px;font-weight:300;letter-spacing:1px;font-variant-numeric:tabular-nums}
+.dial .time span{font-size:12px;color:var(--text2)}
+.dots{display:flex;gap:7px;justify-content:center;margin-bottom:16px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--elev)}
+.dots i.on{background:var(--phase)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:14px;padding:12px;font-weight:600;font-size:15px}
+.btn.primary{background:var(--phase);color:var(--ink)}
+.next{text-align:center;margin:12px 0 16px;font-size:13px;color:var(--text2)}
+.next b{display:block;color:var(--phase);font-size:13px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.btn.sec{background:var(--surface);border:1px solid var(--border);font-size:14px;font-weight:500;padding:10px;border-radius:13px}
+.foot{display:flex;align-items:center;justify-content:space-between;margin-top:18px;font-size:12px;color:var(--text2)}
+.chk{display:inline-flex;align-items:center;gap:6px}
+.chk i{width:14px;height:14px;border-radius:4px;border:1px solid #5b6668;background:#2a3233}
+.chk i.on{background:var(--check);border-color:var(--check);position:relative}
+.chk i.on::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.quit{background:var(--danger);color:#2a0e0e;font-weight:600;border-radius:10px;padding:6px 14px;font-size:13px}
+
+/* 깜빡임 레이어 */
+.flash{position:absolute;inset:0;border-radius:12px;background:var(--phase);color:var(--ink);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;opacity:0;pointer-events:none}
+.flash .t{font-size:38px;font-weight:800;letter-spacing:-.5px}
+.flash .s{font-size:15px;font-weight:600;opacity:.78}
+.glow{position:absolute;inset:-1px;border-radius:13px;pointer-events:none;opacity:0;
+  box-shadow:0 0 0 4px var(--phase),0 0 56px 18px var(--phase)}
+
+/* ── 조작부 ─────────────────────────────────── */
+.ctrl{background:#121819;border:1px solid #243031;border-radius:14px;padding:16px}
+.ctrl h3{font-size:13px;color:var(--text2);margin:14px 0 8px;font-weight:600}
+.ctrl h3:first-child{margin-top:0}
+.ctrl label{display:flex;gap:8px;align-items:flex-start;padding:4px 0;cursor:pointer}
+.ctrl label small{display:block;color:var(--text2);font-size:12px}
+.ctrl input{accent-color:var(--mint);margin-top:4px}
+.ctrl button{width:100%;margin:4px 0;padding:9px 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);
+  font:inherit;font-weight:600;cursor:pointer;text-align:left}
+.ctrl button:hover{border-color:var(--mint)}
+.ctrl button .sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px}
+.rec{font-size:11px;color:var(--ink);background:var(--mint);border-radius:6px;padding:0 6px;margin-left:4px;font-weight:700}
+.note{font-size:12px;color:var(--text2);margin-top:12px;border-top:1px solid #243031;padding-top:10px}
+
+/* ── 설정 비교 ──────────────────────────────── */
+.compare{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+.compare figure{margin:0}
+.compare figcaption{font-size:13px;color:var(--text2);margin-bottom:8px;font-weight:600}
+.compare img{width:360px;border-radius:12px;display:block}
+.settings{width:360px;padding:22px;border-radius:12px;background:var(--bg)}
+.settings .title{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;margin-bottom:18px}
+.settings .back{width:32px;height:32px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:14px}
+.field{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:9px 14px;margin-bottom:10px;font-weight:500;font-size:15px}
+.field b{font-size:17px}.field span{color:var(--text2);font-size:14px;margin-left:10px}
+.group{background:var(--surface);border-radius:14px;padding:0 14px;margin:18px 0}
+.tg{display:flex;align-items:center;justify-content:space-between;padding:8px 0;font-weight:500;font-size:15px}
+.tg+.tg{border-top:1px solid var(--border)}
+.tg small{display:block;color:var(--text2);font-size:12px;font-weight:500}
+.tg.new{position:relative}
+.tg.new::before{content:"";position:absolute;inset:2px -8px;border:1.5px dashed var(--mint);border-radius:10px;pointer-events:none}
+.badge{font-size:10.5px;background:var(--mint);color:var(--ink);border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:2px;font-weight:700}
+.tgbox{width:16px;height:16px;border-radius:4px;background:var(--check);position:relative;cursor:pointer;flex:none}
+.tgbox::after{content:"";position:absolute;left:5px;top:2px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.tgbox.off{background:#2a3233;border:1px solid #5b6668}.tgbox.off::after{display:none}
+.pick{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border-radius:14px;padding:10px 14px;margin-bottom:18px;font-weight:500;font-size:15px}
+.pick span{width:178px;background:#3a4244;border-radius:6px;padding:3px 8px;font-size:12.5px}
+.settings .btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+
+/* ── 순서 ──────────────────────────────────── */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:900px){.steps{grid-template-columns:1fr 1fr}}
+.step{background:#121819;border:1px solid #243031;border-radius:12px;padding:14px}
+.step .n{font-size:12px;color:var(--mint);font-weight:700}
+.step b{display:block;margin:2px 0 4px}
+.step p{margin:0;color:var(--text2);font-size:13px}
+ul.ux{margin:0;padding-left:18px;color:var(--text2)} ul.ux li{margin:4px 0} ul.ux b{color:var(--text)}
+
+/* ── 스크린샷 모드 (?shot=...) ───────────────── */
+body.shot main{padding:0;max-width:none}
+body.shot .hide-in-shot{display:none!important}
+body.shot .stage{display:block}
+body.shot .desktop{border-radius:0;border:0;height:640px}
+body.shot .compare{padding:24px;gap:28px}
+</style>
+</head>
+<body>
+<main>
+  <div class="hide-in-shot">
+    <h1>화면 깜빡임 알림 — 샘플 UI</h1>
+    <p class="lead">타이머가 진행 중일 때 집중·휴식이 바뀌면, 창이 닫혀 있어도 메뉴 막대 아래로 열리면서 단계 색으로 깜빡입니다. 오른쪽 버튼으로 바로 확인해 보세요.</p>
+  </div>
+
+  <section class="stage" id="demoSection">
+    <div class="desktop" id="desktop">
+      <div class="menubar">
+        <b></b><b>Xcode</b><span>File</span><span>Edit</span><span>View</span><span>Window</span>
+        <div class="right">
+          <span class="status" id="status">집중 25:00</span>
+          <span>􀙇</span><span id="clock">11월 25일 (수) 오후 3:12</span>
+        </div>
+      </div>
+
+      <div class="appwin">
+        <div class="bar"><i></i><i></i><i></i>FocusTimer — PomodoroStore.swift</div>
+        <div class="code"><b>private func</b> <em>refreshCountdown</em>() {
+    <b>guard</b> state.isRunning, <b>let</b> endDate <b>else</b> {
+        <b>return</b>
+    }
+    <b>let</b> remaining = max(0, Int(ceil(endDate.timeIntervalSinceNow)))
+    state.updateRemainingSeconds(remaining)
+
+    <b>let</b> alert = state.finishCurrentPhase()
+    alertService.send(alert, settings: alertSettings)
+    <span class="caret"></span></div>
+      </div>
+
+      <div class="edge" id="edge"></div>
+
+      <div class="banner" id="banner"><div class="ic"></div><div><b id="bTitle">집중 완료</b><span id="bBody">휴식 5분을 시작합니다.</span></div></div>
+
+      <div class="panel hidden" id="panel">
+        <div class="hdr">
+          <div class="ph"><span class="dot"></span><span id="phName">집중</span></div>
+          <div class="opacity" title="투명도"></div>
+          <div class="cap" id="cap">집중 1 / 4</div>
+        </div>
+        <div class="dial">
+          <svg viewBox="0 0 236 236"><circle cx="118" cy="118" r="104" fill="none" stroke="#1b2324" stroke-width="13"/>
+            <circle id="arc" cx="118" cy="118" r="104" fill="none" stroke="var(--phase)" stroke-width="13" stroke-linecap="round"
+              transform="rotate(-90 118 118)" stroke-dasharray="653.5" stroke-dashoffset="0"/></svg>
+          <div class="time"><b id="time">25:00</b><span>남은 시간</span></div>
+        </div>
+        <div class="dots" id="dots"></div>
+        <div class="btn primary">❚❚ 일시정지</div>
+        <div class="next"><span id="nextStep">다음 단계: 휴식 5분</span><b>완료 예정 오후 5시 7분</b></div>
+        <div class="row3"><div class="btn sec">중지</div><div class="btn sec">설정</div><div class="btn sec">프로필</div></div>
+        <div class="foot"><span>Focus Timer v1.0.0</span><span class="chk"><i id="pinBox"></i>항상 켜두기</span><span class="quit">종료</span></div>
+        <div class="glow" id="glow"></div>
+        <div class="flash" id="flash"><div class="t" id="fTitle">휴식 시간</div><div class="s" id="fSub">5분 쉬어 가세요</div></div>
+      </div>
+
+      <div class="hint hide-in-shot" id="hint">메뉴 막대의 시간을 누르면 창이 열리고, 바탕화면을 누르면 닫힙니다 (기존 동작)</div>
+    </div>
+
+    <aside class="ctrl hide-in-shot">
+      <h3>전환 일으키기</h3>
+      <button data-go="break"><span class="sw" style="background:var(--rest)"></span>집중 끝 → 휴식 시작</button>
+      <button data-go="focus"><span class="sw" style="background:var(--mint)"></span>휴식 끝 → 다음 집중 시작</button>
+      <button data-go="done"><span class="sw" style="background:var(--mint)"></span>마지막 집중 끝 → 완료</button>
+      <label><input type="checkbox" id="auto"><span>자동 진행 데모<small>집중 8초 · 휴식 5초로 빠르게 돌립니다</small></span></label>
+
+      <h3>기능</h3>
+      <label><input type="checkbox" id="enabled" checked><span>화면 깜빡임 알림<small>끄면 지금처럼 소리·macOS 알림만 옵니다</small></span></label>
+
+      <h3>깜빡임 방식</h3>
+      <label><input type="radio" name="v" value="A"><span>A. 테두리 빛<small>창 테두리만 3회 빛남 · 가장 차분함</small></span></label>
+      <label><input type="radio" name="v" value="B" checked><span>B. 창 전체 깜빡임 <span class="rec">추천</span><small>창이 단계 색으로 3회 번쩍 + "휴식 시간" 크게 표시</small></span></label>
+      <label><input type="radio" name="v" value="C"><span>C. B + 화면 가장자리<small>모니터 테두리까지 함께 빛남 · 가장 강함</small></span></label>
+
+      <h3>상황</h3>
+      <label><input type="checkbox" id="pinned"><span>항상 켜두기 중 (투명도 40%)<small>깜빡이는 동안만 100%로 올렸다가 되돌립니다</small></span></label>
+      <label><input type="checkbox" id="reduce"><span>동작 줄이기 (손쉬운 사용)<small>깜빡임 대신 한 번만 부드럽게 표시합니다</small></span></label>
+      <label><input type="checkbox" id="notif" checked><span>macOS 알림 배너 (기존)<small>실제처럼 오른쪽 위에 함께 뜹니다</small></span></label>
+
+      <p class="note">창을 클릭하면 깜빡임이 즉시 멈춥니다. 다른 앱에서 타이핑 중이어도 입력 포커스는 빼앗지 않습니다.</p>
+    </aside>
+  </section>
+
+  <section id="settingsSection">
+    <div class="hide-in-shot">
+      <h2>설정 화면 — 변경 전 / 변경 후</h2>
+      <p class="sub">기존 알림 토글 묶음에 한 줄만 추가합니다. 새 체크박스는 아래 데모와 연결돼 있습니다.</p>
+    </div>
+    <div class="compare">
+      <figure><figcaption>변경 전 (현재 앱)</figcaption><img src="261125-1512-화면깜빡임알림-변경전설정.png" alt="변경 전 설정 패널"></figure>
+      <figure><figcaption>변경 후 (시안)</figcaption>
+        <div class="settings">
+          <div class="title"><span class="back">‹</span>설정</div>
+          <div class="field">집중 시간<span style="margin-left:auto"></span><b>25</b><span>분</span></div>
+          <div class="field">휴식 시간<span style="margin-left:auto"></span><b>5</b><span>분</span></div>
+          <div class="field">집중 횟수<span style="margin-left:auto"></span><b>4</b><span>회</span></div>
+          <div class="group">
+            <div class="tg">소리 알림<span class="tgbox"></span></div>
+            <div class="tg">macOS 알림<span class="tgbox"></span></div>
+            <div class="tg new"><span>화면 깜빡임 알림<span class="badge">신규</span><small>단계가 바뀌면 타이머 창을 띄워 깜빡입니다</small></span><span class="tgbox" id="setBox"></span></div>
+          </div>
+          <div class="pick">알림 사운드<span>앱 기본 전환음 ⌄</span></div>
+          <div class="pick">소리 반복<span>3회 ⌄</span></div>
+          <div class="btn sec">소리 미리 듣기</div>
+          <div class="btns"><div class="btn sec">취소</div><div class="btn primary" style="--phase:var(--mint)">적용</div></div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="hide-in-shot">
+    <h2>전환 순간의 순서</h2>
+    <p class="sub">B 방식 기준입니다. 전체 약 2.6초이며, 1초에 2회 이하로 깜빡여 광과민성 기준(초당 3회 이하)을 지킵니다.</p>
+    <div class="steps">
+      <div class="step"><div class="n">① 0.0초</div><b>창이 열림</b><p>닫혀 있었다면 메뉴 막대 아래, 고정 중이면 옮겨 둔 자리에서. 다른 앱의 입력 포커스는 그대로입니다.</p></div>
+      <div class="step"><div class="n">② 0.0 ~ 1.3초</div><b>3회 깜빡임</b><p>휴식은 보라, 집중·완료는 민트. "휴식 시간 · 5분 쉬어 가세요"를 크게 보여 줍니다.</p></div>
+      <div class="step"><div class="n">③ 1.3 ~ 2.6초</div><b>문구 유지 후 사라짐</b><p>마지막 깜빡임은 잠깐 머물러 문구를 읽을 시간을 줍니다. 이후 단계 색 테두리만 남습니다.</p></div>
+      <div class="step"><div class="n">④ 사용자 동작</div><b>바깥 클릭 → 닫힘</b><p>지금과 같은 규칙입니다. 고정 중이면 닫지 않고 원래 투명도로 돌아갑니다.</p></div>
+    </div>
+
+    <h2>UX 판단 요약</h2>
+    <ul class="ux">
+      <li><b>포커스를 빼앗지 않음</b> — 타이핑 중 갑자기 키 입력이 타이머 창으로 가면 안 됩니다. 창은 보이기만 하고 활성화하지 않습니다.</li>
+      <li><b>자동으로 닫지 않음</b> — 자리를 비운 사이 전환됐다면 돌아왔을 때 창이 그대로 있어야 알아챕니다. 닫힘은 기존처럼 바깥 클릭으로.</li>
+      <li><b>깜빡임은 짧게, 결과는 오래</b> — 번쩍임은 2.6초로 끝내고, 그 뒤엔 단계 색 테두리와 큰 시간이 상태를 알려 줍니다.</li>
+      <li><b>단계 색 재사용</b> — 집중 민트 / 휴식 보라는 이미 앱 전체에서 쓰는 색이라 색만 봐도 무슨 단계인지 압니다.</li>
+      <li><b>동작 줄이기 존중</b> — macOS 손쉬운 사용에서 동작 줄이기를 켠 사용자에게는 깜빡이지 않고 한 번만 표시합니다.</li>
+      <li><b>사용자가 누른 동작엔 깜빡이지 않음</b> — 시작·중지·프로필 실행처럼 직접 누른 경우는 이미 화면을 보고 있으므로 자연 종료 전환에서만 동작합니다.</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const desktop = $('desktop'), panel = $('panel'), flash = $('flash'), glow = $('glow'), edge = $('edge');
+const cfg = { focusMin: 25, breakMin: 5, total: 4 };
+const S = { phase: 'focus', count: 1, remaining: 25 * 60, length: 25 * 60, visible: false, settled: false };
+let anims = [], autoTimer = null, bannerTimer = null;
+
+const opt = () => ({
+  enabled: $('enabled').checked,
+  variant: document.querySelector('input[name=v]:checked').value,
+  pinned: $('pinned').checked,
+  reduce: $('reduce').checked,
+  notif: $('notif').checked,
+});
+
+const mmss = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+const phaseVar = () => S.phase === 'break' ? 'var(--rest)' : 'var(--mint)';
+const phaseName = () => ({ focus: '집중', break: '휴식', done: '완료' })[S.phase];
+
+function render() {
+  desktop.style.setProperty('--phase', phaseVar());
+  $('phName').textContent = phaseName();
+  $('cap').textContent = `집중 ${S.count} / ${cfg.total}`;
+  $('time').textContent = mmss(S.remaining);
+  $('status').textContent = S.phase === 'done' ? '완료' : `${phaseName()} ${mmss(S.remaining)}`;
+  $('arc').setAttribute('stroke-dashoffset', 653.5 * (1 - S.remaining / Math.max(1, S.length)));
+  $('dots').innerHTML = Array.from({ length: cfg.total }, (_, i) => `<i class="${i < S.count ? 'on' : ''}"></i>`).join('');
+  $('nextStep').textContent = S.phase === 'focus'
+    ? (S.count === cfg.total ? '다음 단계: 완료' : `다음 단계: 휴식 ${cfg.breakMin}분`)
+    : S.phase === 'break' ? `다음 단계: 집중 ${S.count + 1} / ${cfg.total}` : '모든 집중을 완료했습니다.';
+  const o = opt();
+  panel.classList.toggle('pinned', o.pinned);
+  $('pinBox').classList.toggle('on', o.pinned);
+  $('setBox').classList.toggle('off', !o.enabled);
+  placePanel();
+  panel.style.opacity = o.pinned && !anims.length ? 0.4 : 1;
+}
+
+// 고정 중이 아니면 메뉴 막대 시간 바로 아래, 화면 밖으로 나가면 오른쪽 끝에 맞춥니다 (MenuBarController.showPanel과 같은 규칙).
+function placePanel() {
+  if (opt().pinned) { panel.style.left = '620px'; panel.style.top = '96px'; return; }
+  const st = $('status'), x = st.offsetLeft;
+  panel.style.left = Math.min(x, desktop.clientWidth - 360 - 6) + 'px';
+  panel.style.top = '30px';
+}
+
+function showPanel() { S.visible = true; panel.classList.remove('hidden'); $('status').classList.add('on'); }
+function hidePanel() {
+  if (opt().pinned) return;
+  stopFlash(); S.visible = false; panel.classList.add('hidden'); panel.classList.remove('ring'); $('status').classList.remove('on');
+}
+
+// 깜빡임 타이밍(ms, 불투명도): 3회 번쩍 → 마지막은 문구를 읽도록 잠시 유지 → 사라짐.
+const PULSES = [[0, 0], [80, .94], [360, .94], [440, 0], [600, 0], [680, .94], [960, .94], [1040, 0], [1200, 0], [1280, .94], [2200, .94], [2600, 0]];
+const GENTLE = [[0, 0], [300, .94], [2000, .94], [2400, 0]];
+const frames = (list, scale = 1) => list.map(([t, o]) => ({ offset: t / list.at(-1)[0], opacity: o * scale }));
+
+function stopFlash() { anims.forEach(a => a.cancel()); anims = []; }
+
+function playFlash() {
+  stopFlash();
+  const o = opt(), list = o.reduce ? GENTLE : PULSES, duration = list.at(-1)[0];
+  panel.classList.remove('ring');
+  panel.style.opacity = 1;
+  const run = (el, scale) => anims.push(el.animate(frames(list, scale), { duration, easing: 'linear' }));
+  if (o.variant === 'A') run(glow, 1); else run(flash, 1);
+  if (o.variant === 'C') run(edge, o.reduce ? .6 : .85);
+  anims[0].onfinish = () => { anims = []; panel.classList.add('ring'); render(); };
+}
+
+function showBanner(title, body) {
+  if (!opt().notif) return;
+  $('bTitle').textContent = title; $('bBody').textContent = body;
+  $('banner').classList.add('show');
+  clearTimeout(bannerTimer); bannerTimer = setTimeout(() => $('banner').classList.remove('show'), 4000);
+}
+
+// 자연 종료로 단계가 바뀐 순간: PomodoroStore.refreshCountdown()에서 alertService.send 와 같은 자리.
+function transition(to, demoSeconds) {
+  if (to === 'break') { S.phase = 'break'; S.length = demoSeconds ?? cfg.breakMin * 60; }
+  if (to === 'focus') { S.phase = 'focus'; S.count = Math.min(S.count + 1, cfg.total); S.length = demoSeconds ?? cfg.focusMin * 60; }
+  if (to === 'done') { S.phase = 'done'; S.count = cfg.total; S.length = cfg.focusMin * 60; }
+  S.remaining = to === 'done' ? 0 : S.length;
+
+  const msg = {
+    break: ['휴식 시간', `${cfg.breakMin}분 쉬어 가세요`, '집중 완료', `휴식 ${cfg.breakMin}분을 시작합니다.`],
+    focus: [`집중 ${S.count} / ${cfg.total}`, '다시 집중할 시간입니다', '휴식 완료', `집중 ${S.count} / ${cfg.total}를 시작합니다.`],
+    done: ['완료', `집중 ${cfg.total}회를 모두 마쳤습니다`, '타이머 완료', `집중 ${cfg.total}회를 완료했습니다.`],
+  }[to];
+  $('fTitle').textContent = msg[0]; $('fSub').textContent = msg[1];
+  render();
+  showBanner(msg[2], msg[3]);
+  if (!opt().enabled) return;
+  showPanel();
+  playFlash();
+}
+
+// 버튼
+document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => {
+  if (b.dataset.go === 'break' && S.phase !== 'focus') { S.phase = 'focus'; }
+  if (b.dataset.go === 'focus' && S.phase !== 'break') { S.phase = 'break'; if (S.count >= cfg.total) S.count = 1; }
+  if (b.dataset.go === 'done') { S.count = cfg.total; }
+  transition(b.dataset.go);
+});
+$('status').onclick = e => { e.stopPropagation(); S.visible ? hidePanel() : (showPanel(), render()); };
+panel.onclick = e => { e.stopPropagation(); if (anims.length) { stopFlash(); panel.classList.add('ring'); render(); } };
+desktop.onclick = () => hidePanel();
+['enabled', 'pinned', 'reduce', 'notif'].forEach(id => $(id).onchange = () => {
+  if (id === 'pinned') { if (opt().pinned) showPanel(); }
+  render();
+});
+document.querySelectorAll('input[name=v]').forEach(r => r.onchange = render);
+$('setBox').onclick = () => { $('enabled').checked = !$('enabled').checked; render(); };
+
+// 자동 진행 데모: 집중 8초 → 휴식 5초 → … (실제 앱은 1초 틱으로 남은 시간을 갱신)
+$('auto').onchange = () => {
+  clearInterval(autoTimer);
+  if (!$('auto').checked) return;
+  S.phase = 'focus'; S.count = 1; S.length = S.remaining = 8; render();
+  autoTimer = setInterval(() => {
+    if (S.phase === 'done') { clearInterval(autoTimer); $('auto').checked = false; return; }
+    S.remaining -= 1; render();
+    if (S.remaining > 0) return;
+    if (S.phase === 'focus') transition(S.count === cfg.total ? 'done' : 'break', 5);
+    else transition('focus', 8);
+  }, 1000);
+};
+
+// 스크린샷 모드: ?shot=idle|peak|settled|pinned|settings &v=A|B|C
+const q = new URLSearchParams(location.search), shot = q.get('shot');
+if (shot) {
+  document.body.classList.add('shot');
+  if (q.get('v')) document.querySelector(`input[name=v][value=${q.get('v')}]`).checked = true;
+  if (shot === 'settings') { $('demoSection').style.display = 'none'; }
+  else {
+    $('settingsSection').style.display = 'none';
+    $('notif').checked = false;
+    S.phase = 'focus'; S.count = 1; S.length = 1500; S.remaining = 1;
+    if (shot === 'pinned') $('pinned').checked = true;
+    if (shot !== 'idle') {
+      transition('break');
+      stopFlash();
+      S.remaining = shot === 'peak' ? 300 : 297; render();
+      if (shot === 'peak') {
+        const v = opt().variant;
+        (v === 'A' ? glow : flash).style.opacity = .94;
+        if (v === 'C') edge.style.opacity = .85;
+        panel.style.opacity = 1;
+      } else panel.classList.add('ring');
+    }
+  }
+}
+render();
+</script>
+</body>
+</html>
