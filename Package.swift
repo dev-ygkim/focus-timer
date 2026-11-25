@@ -38,7 +38,8 @@ let package = Package(
                 "readme-snapshot.sh",
                 "app-version.sh",
                 "always-on-top.sh",
-                "app-signature.sh"
+                "app-signature.sh",
+                "flash-alert.sh"
             ]
         )
     ]

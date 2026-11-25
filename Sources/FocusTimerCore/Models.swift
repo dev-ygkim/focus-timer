@@ -81,6 +81,8 @@ public struct AlertSettings: Codable, Equatable {
     public var soundChoice: AlertSoundChoice
     /// 알림 소리를 연달아 재생할 횟수입니다. 소리가 1초 안팎으로 짧아 놓치지 않도록 기본 3회입니다.
     public var soundRepeatCount: Int
+    /// 단계가 자연 종료로 바뀌면 닫혀 있던 타이머 창도 띄워 단계 색으로 깜빡입니다.
+    public var flashEnabled: Bool
 
     public static let soundRepeatRange = 1...5
 
@@ -88,12 +90,14 @@ public struct AlertSettings: Codable, Equatable {
         soundEnabled: Bool = true,
         notificationsEnabled: Bool = true,
         soundChoice: AlertSoundChoice = .appDefault,
-        soundRepeatCount: Int = 3
+        soundRepeatCount: Int = 3,
+        flashEnabled: Bool = true
     ) {
         self.soundEnabled = soundEnabled
         self.notificationsEnabled = notificationsEnabled
         self.soundChoice = soundChoice
         self.soundRepeatCount = Self.clampedRepeatCount(soundRepeatCount)
+        self.flashEnabled = flashEnabled
     }
 
     private static func clampedRepeatCount(_ count: Int) -> Int {
@@ -105,6 +109,7 @@ public struct AlertSettings: Codable, Equatable {
         case notificationsEnabled
         case soundChoice
         case soundRepeatCount
+        case flashEnabled
     }
 
     public init(from decoder: any Decoder) throws {
@@ -113,6 +118,7 @@ public struct AlertSettings: Codable, Equatable {
         notificationsEnabled = try container.decodeIfPresent(Bool.self, forKey: .notificationsEnabled) ?? true
         soundChoice = (try? container.decode(AlertSoundChoice.self, forKey: .soundChoice)) ?? .appDefault
         soundRepeatCount = Self.clampedRepeatCount(try container.decodeIfPresent(Int.self, forKey: .soundRepeatCount) ?? 3)
+        flashEnabled = try container.decodeIfPresent(Bool.self, forKey: .flashEnabled) ?? true
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -121,6 +127,7 @@ public struct AlertSettings: Codable, Equatable {
         try container.encode(notificationsEnabled, forKey: .notificationsEnabled)
         try container.encode(soundChoice, forKey: .soundChoice)
         try container.encode(soundRepeatCount, forKey: .soundRepeatCount)
+        try container.encode(flashEnabled, forKey: .flashEnabled)
     }
 }
 
@@ -177,6 +184,29 @@ public enum TimerAlert: Equatable {
             return "집중 \(nextFocusCount) / \(totalFocusCount)를 시작합니다."
         case let .timerCompleted(totalFocusCount):
             return "집중 \(totalFocusCount)회를 완료했습니다."
+        }
+    }
+
+    /// 화면 깜빡임 중 크게 보여 줄 문구입니다. 끝난 단계가 아니라 막 시작한 단계를 알려 줍니다.
+    public var flashTitle: String {
+        switch self {
+        case .focusEnded:
+            return "휴식 시간"
+        case let .breakEnded(nextFocusCount, totalFocusCount):
+            return "집중 \(nextFocusCount) / \(totalFocusCount)"
+        case .timerCompleted:
+            return "완료"
+        }
+    }
+
+    public var flashSubtitle: String {
+        switch self {
+        case let .focusEnded(breakMinutes):
+            return "\(breakMinutes)분 쉬어 가세요"
+        case .breakEnded:
+            return "다시 집중할 시간입니다"
+        case let .timerCompleted(totalFocusCount):
+            return "집중 \(totalFocusCount)회를 모두 마쳤습니다"
         }
     }
 }

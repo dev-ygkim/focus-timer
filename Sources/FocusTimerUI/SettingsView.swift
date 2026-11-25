@@ -15,6 +15,7 @@ public struct SettingsView: View {
     @State private var focusCount = ""
     @State private var soundEnabled = true
     @State private var notificationsEnabled = true
+    @State private var flashEnabled = true
     @State private var soundChoice = AlertSoundChoice.appDefault
     @State private var soundRepeatCount = AlertSettings().soundRepeatCount
     @State private var validationMessage: String?
@@ -35,6 +36,8 @@ public struct SettingsView: View {
                 toggleRow(title: "소리 알림", isOn: $soundEnabled)
                 Divider().overlay(FocusTheme.border)
                 toggleRow(title: "macOS 알림", isOn: $notificationsEnabled)
+                Divider().overlay(FocusTheme.border)
+                toggleRow(title: "화면 깜빡임 알림", caption: "단계가 바뀌면 타이머 창을 띄워 깜빡입니다", isOn: $flashEnabled)
             }
             .padding(.horizontal, 14)
             .background(FocusTheme.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
@@ -168,11 +171,18 @@ public struct SettingsView: View {
         }
     }
 
-    private func toggleRow(title: String, isOn: Binding<Bool>) -> some View {
+    private func toggleRow(title: String, caption: String? = nil, isOn: Binding<Bool>) -> some View {
         HStack {
-            Text(title)
-                .font(.system(size: 15, weight: .medium, design: .rounded))
-                .foregroundStyle(FocusTheme.textPrimary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                    .foregroundStyle(FocusTheme.textPrimary)
+                if let caption {
+                    Text(caption)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(FocusTheme.textSecondary)
+                }
+            }
             Spacer()
             Toggle("", isOn: isOn)
                 .labelsHidden()
@@ -197,6 +207,7 @@ public struct SettingsView: View {
         focusCount = String(configuration.focusCount)
         soundEnabled = timerStore.alertSettings.soundEnabled
         notificationsEnabled = timerStore.alertSettings.notificationsEnabled
+        flashEnabled = timerStore.alertSettings.flashEnabled
         soundChoice = timerStore.alertSettings.soundChoice
         soundRepeatCount = timerStore.alertSettings.soundRepeatCount
         validationMessage = nil
@@ -219,7 +230,8 @@ public struct SettingsView: View {
                 soundEnabled: soundEnabled,
                 notificationsEnabled: notificationsEnabled,
                 soundChoice: soundChoice,
-                soundRepeatCount: soundRepeatCount
+                soundRepeatCount: soundRepeatCount,
+                flashEnabled: flashEnabled
             )
         )
         onClose()

@@ -65,6 +65,24 @@ struct FocusTimerTDDTests {
                 let outOfRange = Data(#"{"soundRepeatCount":9}"#.utf8)
                 try expectEqual(try JSONDecoder().decode(AlertSettings.self, from: outOfRange).soundRepeatCount, 5)
             }),
+            ("alert settings flash the window by default", {
+                try expectEqual(AlertSettings().flashEnabled, true)
+                let legacyData = Data(#"{"soundEnabled":true,"notificationsEnabled":true,"soundChoice":"Glass","soundRepeatCount":3}"#.utf8)
+                try expectEqual(try JSONDecoder().decode(AlertSettings.self, from: legacyData).flashEnabled, true)
+            }),
+            ("alert settings preserve flash toggle", {
+                let settings = AlertSettings(flashEnabled: false)
+                let decoded = try JSONDecoder().decode(AlertSettings.self, from: JSONEncoder().encode(settings))
+                try expectEqual(decoded.flashEnabled, false)
+            }),
+            ("flash copy names the phase that just started", {
+                try expectEqual(TimerAlert.focusEnded(breakMinutes: 5).flashTitle, "휴식 시간")
+                try expectEqual(TimerAlert.focusEnded(breakMinutes: 5).flashSubtitle, "5분 쉬어 가세요")
+                try expectEqual(TimerAlert.breakEnded(nextFocusCount: 2, totalFocusCount: 4).flashTitle, "집중 2 / 4")
+                try expectEqual(TimerAlert.breakEnded(nextFocusCount: 2, totalFocusCount: 4).flashSubtitle, "다시 집중할 시간입니다")
+                try expectEqual(TimerAlert.timerCompleted(totalFocusCount: 4).flashTitle, "완료")
+                try expectEqual(TimerAlert.timerCompleted(totalFocusCount: 4).flashSubtitle, "집중 4회를 모두 마쳤습니다")
+            }),
             ("focus alert copy", testFocusEndedAlertDescribesStartingBreak),
             ("break alert copy", testBreakEndedAlertDescribesNextFocusSession),
             ("completion alert copy", testCompletionAlertDescribesFinishedFocusSessions),

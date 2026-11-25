@@ -7,6 +7,8 @@ public struct TimerPopoverView: View {
     @ObservedObject var profileStore: ProfileStore
     @Binding var isPinned: Bool
     @Binding var pinnedOpacity: Double
+    let flashCount: Int
+    let flashAlert: TimerAlert?
 
     private enum Panel {
         case timer
@@ -16,17 +18,31 @@ public struct TimerPopoverView: View {
 
     @State private var panel = Panel.timer
     @FocusState private var isPrimaryActionFocused: Bool
+    @State private var flashOpacity = 0.0
+    @State private var isFlashStopped = false
+
+    /// 3회 번쩍인 뒤 마지막은 문구를 읽도록 잠시 머물렀다 사라집니다. 약 0.5초 간격이라 초당 3회 이하(광과민성 기준)입니다.
+    private static let flashSteps: [(opacity: Double, milliseconds: UInt64)] = [
+        (0.94, 300), (0, 220), (0.94, 300), (0, 220), (0.94, 1_160), (0, 400)
+    ]
+    /// 동작 줄이기 중에는 깜빡이지 않고 한 번만 보여 줍니다. 길이는 flashSteps와 같습니다.
+    private static let gentleFlashSteps: [(opacity: Double, milliseconds: UInt64)] = [(0.94, 2_200), (0, 400)]
+    static let flashDuration = TimeInterval(flashSteps.map(\.milliseconds).reduce(0, +)) / 1_000
 
     public init(
         timerStore: PomodoroStore,
         profileStore: ProfileStore,
         isPinned: Binding<Bool>,
-        pinnedOpacity: Binding<Double>
+        pinnedOpacity: Binding<Double>,
+        flashCount: Int = 0,
+        flashAlert: TimerAlert? = nil
     ) {
         self.timerStore = timerStore
         self.profileStore = profileStore
         _isPinned = isPinned
         _pinnedOpacity = pinnedOpacity
+        self.flashCount = flashCount
+        self.flashAlert = flashAlert
     }
 
     public var body: some View {
@@ -44,7 +60,55 @@ public struct TimerPopoverView: View {
                 })
             }
         }
+        .overlay { flashOverlay }
+        .task(id: flashCount) {
+            guard flashCount > 0, flashAlert != nil else {
+                return
+            }
+            await playFlash()
+        }
         .preferredColorScheme(.dark)
+    }
+
+    /// 단계 색으로 창 전체를 덮어 막 시작한 단계를 크게 알리고, 끝나면 창이 닫힐 때까지 단계 색 테두리를 남깁니다.
+    private var flashOverlay: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(phaseColor, lineWidth: 2)
+                .opacity(flashAlert == nil ? 0 : 1)
+                .allowsHitTesting(false)
+
+            VStack(spacing: 4) {
+                Text(flashAlert?.flashTitle ?? "")
+                    .font(.system(size: 38, weight: .heavy, design: .rounded))
+                Text(flashAlert?.flashSubtitle ?? "")
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .opacity(0.78)
+            }
+            .foregroundStyle(FocusTheme.ink)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(phaseColor)
+            .opacity(flashOpacity)
+            // 문구에 가려 보이지 않는 중지·종료 버튼이 눌리지 않도록, 깜빡이는 동안의 클릭은 깜빡임만 멈춥니다.
+            .contentShape(Rectangle())
+            .onTapGesture {
+                isFlashStopped = true
+                flashOpacity = 0
+            }
+            .allowsHitTesting(flashOpacity > 0)
+        }
+    }
+
+    private func playFlash() async {
+        isFlashStopped = false
+        let reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+        for step in reduceMotion ? Self.gentleFlashSteps : Self.flashSteps where !isFlashStopped {
+            withAnimation(.easeInOut(duration: reduceMotion ? 0.3 : 0.08)) {
+                flashOpacity = step.opacity
+            }
+            try? await Task.sleep(nanoseconds: step.milliseconds * 1_000_000)
+        }
+        flashOpacity = 0
     }
 
     private var timerPanel: some View {

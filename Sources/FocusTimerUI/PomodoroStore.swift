@@ -6,6 +6,8 @@ import FocusTimerCore
 public final class PomodoroStore: ObservableObject {
     @Published public private(set) var state: PomodoroState
     @Published public private(set) var alertSettings: AlertSettings
+    /// 단계가 자연 종료로 바뀌었고 화면 깜빡임 알림이 켜져 있을 때 그 알림을 내보냅니다.
+    public let flashRequests = PassthroughSubject<TimerAlert, Never>()
 
     private let defaults: UserDefaults
     private let alertService: any AlertNotifying
@@ -153,6 +155,9 @@ public final class PomodoroStore: ObservableObject {
 
         if let alert {
             alertService.send(alert, settings: alertSettings)
+            if alertSettings.flashEnabled {
+                flashRequests.send(alert)
+            }
         }
 
         if state.isRunning {
